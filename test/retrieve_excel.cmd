@@ -1,0 +1,1 @@
+cscript retrieve_excel.vbs C:\temp //nologo

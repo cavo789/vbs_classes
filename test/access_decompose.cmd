@@ -1,0 +1,1 @@
+cscript access_decompose.vbs //nologo

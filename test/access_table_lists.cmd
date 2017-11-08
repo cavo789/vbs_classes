@@ -1,0 +1,1 @@
+cscript access_table_lists.vbs //nologo

@@ -1,0 +1,1 @@
+cscript access_remove_prefix.vbs //nologo
