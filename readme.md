@@ -1,4 +1,6 @@
-# Windows - Script utilities
+# Windows - Script utilities for Windows & MS Office
+
+> See also my [MS Access repository](https://github.com/cavo789/ms_access) which contains vba code for MS Access (to place in a module)
 
 This repository contains VBS classes that will help Windows users to collect a list of files based on extensions (see `classes/ScanFolder.vbs`) and utilities to work with MS Access databases (see `classes/MSAccess.vbs`)
 
