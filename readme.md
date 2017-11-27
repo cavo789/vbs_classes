@@ -8,22 +8,22 @@ This repository contains VBS classes that will help Windows users to collect a l
 
 Provide functionnalities for working with files under Windows.
 
-See [documentation](src/classes/files.md)
+See [documentation](https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md)
 
 ## classes/MSAccess.vbs
 
 Provide functionnalities for working with MS Access databases.
 
-See [documentation](src/classes/msaccess.md)
+See [documentation](https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md)
 
 ## classes/MSExcel.vbs
 
 Provide functionnalities for working with MS Excel workbooks.
 
-See [documentation](src/classes/msexcel.md)
+See [documentation](https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md)
 
 ## classes/ScanFolder.vbs
 
 ScanFolder is aiming to scan recursively a folder and search for f.i. text files (`.txt`, `.csv`, `.md`, ...), Excel files (`.xlsx`, `.xlam`, ...), collect the list of filenames and output them in a text file so that file can be used by an another business logic.
 
-See [documentation](src/classes/scanfolder.md)
+See [documentation](https://github.com/cavo789/vbs_scripts/blob/master/src/classes/ScanFolder.md)
