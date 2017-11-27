@@ -19,6 +19,25 @@ Class clsScanFolder
 	Private sOutputFileName
 	Private colExtensions
 	Private sSearchFolder
+	Private bVerbose 
+
+	Public Property Let verbose(bYesNo)
+		bVerbose = bYesNo
+	End Property
+
+	Private Sub Class_Initialize()	
+		bVerbose = False
+		Set objFSO = CreateObject("Scripting.FileSystemObject")
+		Set colExtensions = CreateObject("Scripting.Dictionary")
+		colExtensions.CompareMode = 1 ' make lookups case-insensitive
+	End Sub
+
+	Private Sub Class_Terminate()
+		objOutput.Close
+		Set objOutput = Nothing
+		Set colExtensions = Nothing
+		Set objFSO = Nothing
+	End Sub
 
 	' Filenames will be outputted in this file
 	Public Property Let OutputFileName(sFileName)
@@ -34,22 +53,6 @@ Class clsScanFolder
 	Public Property Let SearchFolder(sFolderName)
 		sSearchFolder = sFolderName
 	End Property
-
-	Private Sub Class_Initialize()
-		Set objFSO = CreateObject("Scripting.FileSystemObject")
-		Set colExtensions = CreateObject("Scripting.Dictionary")
-		colExtensions.CompareMode = 1 ' make lookups case-insensitive
-	End Sub
-
-	Private Sub Class_Terminate()
-
-		objOutput.Close
-		Set objOutput = Nothing
-
-		Set colExtensions = Nothing
-		Set objFSO = Nothing
-
-	End Sub
 
 	' ------------------------------------------------------------------
 	'
@@ -118,6 +121,10 @@ Class clsScanFolder
 	'
 	' ------------------------------------------------------------------
 	Public Function Run() 
+
+		If bVerbose Then 
+			wscript.echo vbCrLf & "=== clsScanFolder::Run ===" & vbCrLf
+		End If
 
 		Call FileSearch(sSearchFolder)
 		Run =  true

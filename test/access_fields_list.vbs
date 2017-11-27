@@ -8,17 +8,18 @@
 ' the shortest and longest value size (for text and memo fields)
 '
 ' The output will be something like : 
+' Database;TableName;FieldName;FieldType;FieldSize;ShortestSize;LongestSize;Position;Occurences;
+' C:\Temp\db1.accdb;Bistel;RefDate;Date/Time;8;;1;1
+' C:\Temp\db1.accdb;Bistel;BudgetType;Byte;1;;2;1
+' C:\Temp\db1.accdb;Bistel;OrganicDivision;Text (fixed width);2;;3;1
+' C:\Temp\db1.accdb;Bistel;Program;Text (fixed width);1;;4;1
+' C:\Temp\db1.accdb;Bistel;Published;Yes/No;1;;5;1
+' C:\Temp\db1.accdb;Bistel;DescriptionDutch;Text;50;10;48;6;1
+' C:\Temp\db1.accdb;Bistel;DescriptionFrench;Text;50;0;50;7;1
+' C:\Temp\db1.accdb;Bistel;Article;Text;6;6;6;8;1
+' C:\Temp\db1.accdb;departements;bud;Text;255;2;2;1;1
 '
-' Database;TableName;FieldName;FieldType;FieldSize;ShortestSize;LongestSize
-' C:\Temp\db1.accdb;Bistel;RefDate;Date/Time;8;;
-' C:\Temp\db1.accdb;Bistel;BudgetType;Byte;1;;
-' C:\Temp\db1.accdb;Bistel;OrganicDivision;Text (fixed width);2;;
-' C:\Temp\db1.accdb;Bistel;Program;Text (fixed width);1;;
-' C:\Temp\db1.accdb;Bistel;Published;Yes/No;1;;
-' C:\Temp\db1.accdb;Bistel;DescriptionDutch;Text;50;10;48
-' C:\Temp\db1.accdb;Bistel;DescriptionFrench;Text;50;0;50
-' C:\Temp\db1.accdb;Bistel;Article;Text;6;6;6
-' C:\Temp\db1.accdb;departements;bud;Text;255;2;2
+' More info and explanations of fields : please read   https://github.com/cavo789/vbs_scripts/tree/master/src/classes/msaccess.md
 '
 ' Requires 
 ' ========

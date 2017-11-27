@@ -3,38 +3,23 @@
 ' Author : Christophe Avonture
 ' Date   : November 2017
 '
-' Display the list of tables of a specific MS Access database 
-' (the file should exists)
-'
+' Start Excel and open a csv file
+
 ' Requires 
 ' ========
 '
-' 	* src\classes\MSAccess.vbs
+' 	* src\classes\MSExcel.vbs
 '
 ' ===========================================================================
 
 Option Explicit
-
-Sub ShowHelp()
-
-	Wscript.Echo " ====================================================="
-	Wscript.Echo " = Scan for MS Access databases with attached tables ="
-	Wscript.Echo " ====================================================="
-	WScript.Echo ""	
-	WScript.Echo " Please specify the name of the database to scan; f.i. : "
-	WScript.Echo " " & Wscript.ScriptName & " 'C:\Temp\db1.accdb'"
-	WScript.Echo ""
-
-	WScript.Quit 
-
-End sub
 
 ' Include the script library in this context
 Sub IncludeFile(sFileName) 
 
 	Dim objFSO, objFile
 
-	Set objFSO = CreateObject("Scripting.FileSystemObject")	
+	Set objFSO = CreateObject("Scripting.FileSystemObject")    
 
 	If (objFSO.FileExists(sFileName)) Then
 
@@ -70,33 +55,20 @@ Sub IncludeClasses()
 	sFolder = objFSO.GetParentFolderName(sFolder) & "\"
 	Set objFile = Nothing
 
-	IncludeFile(sFolder & "src\classes\MSAccess.vbs")
+	IncludeFile(sFolder & "src\classes\MSExcel.vbs")
 	
 End Sub
 
-Dim cMSAccess
-Dim sFile
-Dim arrDBNames(0)
+Dim cMSExcel
+Dim sFileName
 
-	' Get the first argument (f.i. "C:\Temp\db1.accdb")
-	If (wScript.Arguments.Count = 0) Then 
-
-		Call ShowHelp
-
-	Else 
-
-		' Get the path specified on the command line
-		sFile = Wscript.Arguments.Item(0)
+	' Includes external classes
+	Call IncludeClasses
 	
-		' Includes external classes
-		Call IncludeClasses
-		
-		Set cMSAccess = New clsMSAccess
-
-		arrDBNames(0) = sFile
-		
-		wScript.Echo cMSAccess.GetListOfTables(arrDBNames, false)
-
-		Set cMSAccess = Nothing
-
-	End If
+	Set cMSExcel = New clsMSExcel
+	
+	cMSExcel.Verbose = True
+	
+	sFileName = "C:\Users\Avonture_christophe\AppData\Local\Temp\output.csv"
+	
+	cMSExcel.OpenCSV(sFileName, "A nice title", "Tab name")	

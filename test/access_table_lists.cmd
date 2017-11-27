@@ -1,1 +1,1 @@
-cscript access_table_lists.vbs //nologo
+cscript access_table_lists.vbs "C:\Temp\db1.accdb" //nologo

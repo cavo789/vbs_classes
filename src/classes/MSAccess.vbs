@@ -16,13 +16,23 @@ Class clsMSAccess
 
 	Private oApplication
 	Private bVerbose 
+	
+	Private sDelim
 
 	Public Property Let verbose(bYesNo)
 		bVerbose = bYesNo		
 	End Property
 
+	' Define the delimiter to use for the CSV file (; or , or ...)	
+	Public Property Let CSVDelimiter(ByVal sDelimiter)
+		sDelim = sDelimiter
+	End Property
+
 	Private Sub Class_Initialize()	
 		bVerbose = False		
+
+		sDelim = ";"
+
 		Set oApplication = CreateObject("Access.Application")
 		oApplication.Visible = True
 	End Sub
@@ -72,13 +82,17 @@ Class clsMSAccess
 
 		bReturn = True
 
-		Set objFSO = CreateObject("Scripting.FileSystemObject")    
-
+		Set objFSO = CreateObject("Scripting.FileSystemObject")	
+		
+		iMin = LBound(arrDBNames)
+		iMax = UBound(arrDBNames)
+		
 		For i = iMin To iMax
 			If Not (objFSO.FileExists(arrDBNames(I))) Then
 				bReturn = False
 				wScript.Echo "ERROR - clsMSAccess::CheckIfFilesExists - " & _
-					"File " & arrDBNames(I) & " not found"
+					"File " & arrDBNames(I) & " not found " & _
+					"(clsMSAccess::CheckIfFilesExists)" 
 			End if
 		Next
 
@@ -131,64 +145,64 @@ Class clsMSAccess
 	' (No license information found at that URL.)
 	Private Function GetFieldTypeName(FieldType, FieldAttributes)
 	
-	    Dim sReturn
+		Dim sReturn
 	
-	    Select Case CLng(FieldType) 
-	        Case 1: sReturn = "Yes/No"            ' dbBoolean
-	        Case 2: sReturn = "Byte"                 ' dbByte
-	        Case 3: sReturn = "Integer"           ' dbInteger
-	       
-			Case 4                                     ' dbLong
-		   	 If (FieldAttributes And 17) = 0 Then ' dbAutoIncrField
-		   		 sReturn = "Long Integer"
-		   	 Else
-		   		 sReturn = "AutoNumber"
-		   	 End If
-		    Case 5: sReturn = "Currency"         ' dbCurrency
-		    Case 6: sReturn = "Single"             ' dbSingle
-		    Case 7: sReturn = "Double"             ' dbDouble
-		    Case 8: sReturn = "Date/Time"            ' dbDate
-		    Case 9: sReturn = "Binary"             ' dbBinary (no interface)
-		    Case 10                                     'dbText
-		   	 If (FieldAttributes And 1) = 0 Then 'dbFixedField
-		   		 sReturn = "Text"
-		   	 Else
-		   		 sReturn = "Text (fixed width)"        '(no interface)
-		   	 End If
-		    Case 11: sReturn = "OLE Object"     'dbLongBinary
-		    Case 12                                     'dbMemo
-		   	 If (FieldAttributes And 32768) = 0 Then ' dbHyperlinkField
-		   		 sReturn = "Memo"
-		   	 Else
-		   		 sReturn = "Hyperlink"
-		   	 End If
-		    Case 15: sReturn = "GUID"                 'dbGUID
+		Select Case CLng(FieldType) 
+			Case 1: sReturn = "Yes/No"			' dbBoolean
+			Case 2: sReturn = "Byte"				 ' dbByte
+			Case 3: sReturn = "Integer"		   ' dbInteger
 
-		    'Attached tables only: cannot create these in JET.
-		    Case 16: sReturn = "Big Integer"        'dbBigInt
-		    Case 17: sReturn = "VarBinary"       'dbVarBinary
-		    Case 18: sReturn = "Char"                 'dbChar
-		    Case 19: sReturn = "Numeric"           'dbNumeric
-		    Case 20: sReturn = "Decimal"           'dbDecimal
-		    Case 21: sReturn = "Float"               'dbFloat
-		    Case 22: sReturn = "Time"                 'dbTime
-		    Case 23: sReturn = "Time Stamp"      'dbTimeStamp
+			Case 4									 ' dbLong
+				If (FieldAttributes And 17) = 0 Then ' dbAutoIncrField
+					sReturn = "Long Integer"
+				Else
+					sReturn = "AutoNumber"
+				End If
+			Case 5: sReturn = "Currency"		 ' dbCurrency
+			Case 6: sReturn = "Single"			 ' dbSingle
+			Case 7: sReturn = "Double"			 ' dbDouble
+			Case 8: sReturn = "Date/Time"			' dbDate
+			Case 9: sReturn = "Binary"			 ' dbBinary (no interface)
+			Case 10									 'dbText
+				If (FieldAttributes And 1) = 0 Then 'dbFixedField
+					sReturn = "Text"
+				Else
+					sReturn = "Text (fixed width)"		'(no interface)
+				End If
+			Case 11: sReturn = "OLE Object"	 'dbLongBinary
+			Case 12									 'dbMemo
+				If (FieldAttributes And 32768) = 0 Then ' dbHyperlinkField
+					sReturn = "Memo"
+				Else
+					sReturn = "Hyperlink"
+				End If
+			Case 15: sReturn = "GUID"				 'dbGUID
 
-		    'Constants for complex types don't work prior to Access 2007.
-		    'Case 101&: sReturn = "Attachment"         'dbAttachment
-		    'Case 102&: sReturn = "Complex Byte"       'dbComplexByte
-		    'Case 103&: sReturn = "Complex Integer"    'dbComplexInteger
-		    'Case 104&: sReturn = "Complex Long"       'dbComplexLong
-		    'Case 105&: sReturn = "Complex Single"     'dbComplexSingle
-		    'Case 106&: sReturn = "Complex Double"     'dbComplexDouble
-		    'Case 107&: sReturn = "Complex GUID"       'dbComplexGUID
-		    'Case 108&: sReturn = "Complex Decimal"    'dbComplexDecimal
-		    'Case 109&: sReturn = "Complex Text"       'dbComplexText		   
-		   
-	        Case Else: sReturn = "Field type " & fld.Type & " unknown"
-	    End Select
-	 
-	    GetFieldTypeName = sReturn
+			'Attached tables only: cannot create these in JET.
+			Case 16: sReturn = "Big Integer"		'dbBigInt
+			Case 17: sReturn = "VarBinary"	   'dbVarBinary
+			Case 18: sReturn = "Char"				 'dbChar
+			Case 19: sReturn = "Numeric"		   'dbNumeric
+			Case 20: sReturn = "Decimal"		   'dbDecimal
+			Case 21: sReturn = "Float"			   'dbFloat
+			Case 22: sReturn = "Time"				 'dbTime
+			Case 23: sReturn = "Time Stamp"	  'dbTimeStamp
+
+			'Constants for complex types don't work prior to Access 2007.
+			'Case 101&: sReturn = "Attachment"		 'dbAttachment
+			'Case 102&: sReturn = "Complex Byte"	   'dbComplexByte
+			'Case 103&: sReturn = "Complex Integer"	'dbComplexInteger
+			'Case 104&: sReturn = "Complex Long"	   'dbComplexLong
+			'Case 105&: sReturn = "Complex Single"	 'dbComplexSingle
+			'Case 106&: sReturn = "Complex Double"	 'dbComplexDouble
+			'Case 107&: sReturn = "Complex GUID"	   'dbComplexGUID
+			'Case 108&: sReturn = "Complex Decimal"	'dbComplexDecimal
+			'Case 109&: sReturn = "Complex Text"	   'dbComplexText		   
+			Case Else: sReturn = "Field type " & fld.Type & " unknown"
+		End Select
+
+		GetFieldTypeName = sReturn
+
 	End Function
 	
 	' --------------------------------------------------------------
@@ -201,19 +215,26 @@ Class clsMSAccess
 	'
 	' Example = 
 	'
-	'    arr(0) = "c:\temp\db1.accdb"
-	'    arr(1) = "c:\temp\db2.accdb"
-	'    arr(2) = "c:\temp\db3.accdb"
+	'	arr(0) = "c:\temp\db1.accdb"
+	'	arr(1) = "c:\temp\db2.accdb"
+	'	arr(2) = "c:\temp\db3.accdb"
 	'
-	'    wScript.Echo GetListOfTables(arr, True)
+	'	wScript.Echo GetListOfTables(arr, True)
 	'
 	' --------------------------------------------------------------	
 	Public Function GetListOfTables(ByRef arrDBNames, bOnlyForeign) 
 
-		Dim i, iMin, iMax 
-		Dim sSQL, sReturn
-		Dim rs
-
+		Dim i, iMin, iMax, wTable, wRecordCount
+		Dim sSQL, sReturn, sLine
+		Dim rs, rs2
+		Dim sFormulaOccurences, sFormula
+		
+		sReturn = ""
+		
+		If bVerbose Then 
+			wScript.Echo vbCrLf & "=== clsMSAccess::GetListOfTables ===" & vbCrLf
+		End If
+		
 		If IsArray(arrDBNames) Then
 
 			' Before starting, just verify that files exists 
@@ -221,13 +242,24 @@ Class clsMSAccess
 			If CheckIfFilesExists(arrDBNames) Then
 				' Ok, database(s) are well present, we can start
 
-				sReturn = "Database Filename;Table name;Linked Database;" & _
-					"Linked Table name;Table Type" & vbCrLf
+				sReturn = "Filename" & sDelim & "TableName" & sDelim & _
+					"LinkedDatabase" & sDelim & " LinkedTableName" & sDelim & _
+					"TableType" & sDelim & "RecordCount" & sDelim & _
+					"Occurences" & vbCrLf
+
+				sFormulaOccurences = "=MAX(COUNTIF($B$2:B@COUNT@,B@ROW@))"
+
+				iMin = LBound(arrDBNames)
+				iMax = UBound(arrDBNames)
+				
+				' Initialize the number of tables founds
+				wTable = 1
 
 				For i = iMin To iMax
 
 					If bVerbose Then 
-						wscript.echo "Process " & arrDBNames(I)
+						wScript.Echo "Process " & arrDBNames(I) & " " & _
+							"(clsMSAccess::GetListOfTables)"
 					End If
 
 					Call OpenDatabase(arrDBNames(I))
@@ -261,17 +293,35 @@ Class clsMSAccess
 					Set rs = oApplication.CurrentDB.OpenRecordset(sSQL, 4) 
 
 					If rs.RecordCount <> 0 Then
+
 						Do While Not rs.EOF
-							sReturn = sReturn & _
-								arrDBNames(I) & ";" & _
-								rs.fields("TableName").Value & ";" & _
-								rs.fields("Database").Value & ";" & _
-								rs.Fields("ForeignName").Value & ";" & _
-								GetTableType(rs.Fields("Type").Value) & _
-								vbCrLf
+						
+							sSQL  = "SELECT Count(*) As Count " & _
+								"FROM [" & rs.fields("TableName").Value & "]"
+								
+							Set rs2 = oApplication.CurrentDB.OpenRecordset(sSQL, 4)
+							wRecordCount = rs2.Fields("Count").Value
+							rs2.Close
+							Set rs2 = Nothing 
+
+							' + 1 since the first row of the file is
+							' the list of fieldnames
+							sFormula = replace(sFormulaOccurences, "@ROW@", wTable + 1)
+
+							sLine = arrDBNames(I) & sDelim & _
+								rs.fields("TableName").Value & sDelim & _
+								rs.fields("Database").Value & sDelim & _
+								rs.Fields("ForeignName").Value & sDelim & _
+								GetTableType(rs.Fields("Type").Value) & sDelim & _
+								wRecordCount & sDelim & sFormula
+
+							sReturn = sReturn & sLine & vbCrLf
+
+							wTable = wTable + 1
 
 							rs.MoveNext
-							Loop
+						Loop
+
 					End If
 
 					If Not rs Is Nothing Then
@@ -283,12 +333,23 @@ Class clsMSAccess
 
 				Next
 
-			End IF
+				' Get the total number of tables found
+				If (sReturn <> "") Then 
+					sReturn = replace(sReturn, "@COUNT@", wTable)
+				End If
 
+			End IF
+			
+			If bVerbose Then 
+				wScript.Echo "List of tables : (clsMSAccess::GetListOfTables)"
+				wScript.Echo sReturn
+			End If
+			
 		Else
 			wScript.Echo "ERROR - clsMSAccess::GetListOfTables - " & _
-				"You must provide an array with filenames."
-		End If
+				"You must provide an array with filenames. " & _
+				"(clsMSAccess::GetListOfTables)"
+		End If		
 
 		GetListOfTables = sReturn
 
@@ -304,19 +365,23 @@ Class clsMSAccess
 	'
 	' Example = 
 	'
-	'    arr(0) = "c:\temp\db1.accdb"
-	'    arr(1) = "c:\temp\db2.accdb"
-	'    arr(2) = "c:\temp\db3.accdb"
+	'	arr(0) = "c:\temp\db1.accdb"
+	'	arr(1) = "c:\temp\db2.accdb"
+	'	arr(2) = "c:\temp\db3.accdb"
 	'
-	'    wScript.Echo GetFieldsList(arr)
+	'	wScript.Echo GetFieldsList(arr)
 	'
 	' --------------------------------------------------------------	
 	Public Function GetFieldsList(ByRef arrDBNames) 
 
-		Dim i, iMin, iMax, sShortest, sLargest
-		Dim sSQL, sReturn, sTableName, sType
+		Dim i, iMin, iMax, sShortest, sLargest, wPos, wRow
+		Dim sSQL, sReturn, sTableName, sType, sFormulaOccurences, sFormula
 		Dim objTable, objField, rs
-
+		
+		If bVerbose Then 
+			wScript.Echo vbCrLf & "=== clsMSAccess::GetFieldsList ===" & vbCrLf
+		End If
+		
 		If IsArray(arrDBNames) Then
 
 			' Before starting, just verify that files exists 
@@ -324,13 +389,21 @@ Class clsMSAccess
 			If CheckIfFilesExists(arrDBNames) Then
 				' Ok, database(s) are well present, we can start
 
-				sReturn = "Database Filename;Table name;Field name;Field type; " & _
-					"Field size;Shortest size;Longest size" & vbCrLf
+				sReturn = "Filename;TableName;FieldName;FieldType; " & _
+					"FieldSize;ShortestSize;LongestSize;Position;Occurences" & vbCrLf
+					
+				sFormulaOccurences = "=COUNTIFS($B$2:$B$@COUNT@,B@ROW@,$C$2:$C$@COUNT@,C@ROW@)"
+					
+				wRow = 1
+
+				iMin = LBound(arrDBNames)
+				iMax = UBound(arrDBNames)
 
 				For i = iMin To iMax
 
 					If bVerbose Then 
-						wscript.echo "Process " & arrDBNames(I)
+						wScript.Echo "Process " & arrDBNames(I) & " " & _
+							"(clsMSAccess::GetFieldsList)"
 					End If
 
 					Call OpenDatabase(arrDBNames(I))
@@ -340,43 +413,63 @@ Class clsMSAccess
 					For each objTable In oApplication.CurrentDB.TableDefs
 
 						sTableName = objTable.Name
+						
+						wPos = 0
 
 						' Ignore system and temporary tables
 						If (lcase(Left(sTableName, 4))<>"msys") And (Left(sTableName, 1) <> "~") Then
 
-							For Each objField In objTable.Fields   
-							
+							If bVerbose Then 
+								wScript.Echo "   Get list of fields of [" & _
+									sTableName & "]"
+							End If
+
+							For Each objField In objTable.Fields
+
+								wPos = wPos + 1
+								wRow = wRow + 1
+
+								If bVerbose Then 
+									wScript.Echo "      Field  [" & _
+										objField.Name & "]"
+								End If
+
 								sShortest = ""
 								sLargest = ""
-								
+
 								sType = GetFieldTypeName(objField.Type, objField.Attributes) 
-								
+
 								If (sType = "Text") Or (sType = "Memo") Then 
-								
+
 									sSQL = "SELECT " & _
 										"Min(Len([" & objField.Name & "])) As Min, " & _
 										"Max(Len([" & objField.Name & "])) As Max " & _
 										"FROM [" & sTableName & "]"
-									
+
 									Set rs = oApplication.CurrentDB.OpenRecordset(sSQL, 4) 
 
 									sShortest = rs.Fields("Min").Value 
 									sLargest = rs.Fields("Max").Value 
-									
+
 				 					rs.Close
-									
+
 				 					Set rs = Nothing
-									
+
 								End If
+								
+								sFormula = replace(sFormulaOccurences, "@ROW@", wRow)
 
 								sReturn = sReturn & _
-									arrDBNames(I) & ";" & _
-									sTableName & ";" & _
-									objField.Name & ";" & _
-									sType & ";" & _
-									objField.Size & ";" & _
-									sShortest & ";" & sLargest & vbCrLf'
-	    					Next
+									arrDBNames(I) & sDelim & _
+									sTableName & sDelim & _
+									objField.Name & sDelim & _
+									sType & sDelim & _
+									objField.Size & sDelim & _
+									sShortest & sDelim & _
+									sLargest & sDelim & _
+									wPos & sDelim & _
+									sFormula & vbCrLf 
+							Next
 
 						End if
 
@@ -385,33 +478,36 @@ Class clsMSAccess
 					Call CloseDatabase
 
 				Next
+				
+				sReturn = Replace(sReturn, "@COUNT@", wRow)
 
 			End IF
 
 		Else
 			wScript.Echo "ERROR - clsMSAccess::GetFieldsList - " & _
-				"You must provide an array with filenames."
+				"You must provide an array with filenames. " & _
+				"(clsMSAccess::GetFieldsList)"
 		End If
 
 		GetFieldsList = sReturn
 
 	End Function
-		
+
 	' --------------------------------------------------------------
 	'
 	' Scan one or severall MS Access databases and if table's name 
 	' start with a given prefix (like "dbo_"), remove that prefix
 	'
 	' @arrDBNames : array - Contains the list of databases to scan
-	' @sPrefix    : the prefix to remove (f.i. "dbo_")
+	' @sPrefix	: the prefix to remove (f.i. "dbo_")
 	'
 	' Example = 
 	'
-	'    arr(0) = "c:\temp\db1.accdb"
-	'    arr(1) = "c:\temp\db2.accdb"
-	'    arr(2) = "c:\temp\db3.accdb"
+	'	arr(0) = "c:\temp\db1.accdb"
+	'	arr(1) = "c:\temp\db2.accdb"
+	'	arr(2) = "c:\temp\db3.accdb"
 	'
-	'    wScript.Echo RemovePrefix(arr, "dbo_")
+	'	wScript.Echo RemovePrefix(arr, "dbo_")
 	'
 	' --------------------------------------------------------------	
 	Public Sub RemovePrefix(ByRef arrDBNames, sPrefix) 
@@ -426,11 +522,15 @@ Class clsMSAccess
 			' If no, show an error message and stop
 			If CheckIfFilesExists(arrDBNames) Then
 				' Ok, database(s) are well present, we can start
+				
+				iMin = LBound(arrDBNames)
+				iMax = UBound(arrDBNames)
 
 				For i = iMin To iMax
 
 					If bVerbose Then 
-						wscript.echo "Process database " & arrDBNames(I)
+						wScript.Echo "Process database " & arrDBNames(I) & " " & _
+							"(clsMSAccess::RemovePrefix)"
 					End If
 
 					Call OpenDatabase(arrDBNames(I))
@@ -441,8 +541,9 @@ Class clsMSAccess
 							sNewName = Mid(objTable.Name, Len(sPrefix) + 1)
 
 							If bVerbose Then
-								wScript.Echo "   Rename [" & objTable.Name & "] " & _
-									"to [" & sNewName & "]"
+								wScript.Echo "Rename [" & objTable.Name & "] " & _
+									"to [" & sNewName & "] " & _
+									"(clsMSAccess::RemovePrefix)"
 							End If	
 
 							' 0 = acTable
@@ -459,7 +560,8 @@ Class clsMSAccess
 
 		Else
 			wScript.Echo "ERROR - clsMSAccess::RemovePrefix - " & _
-				"You must provide an array with filenames."
+				"You must provide an array with filenames. " & _
+				"(clsMSAccess::RemovePrefix)" 
 		End If
 
 	End Sub
@@ -472,11 +574,11 @@ Class clsMSAccess
 	'
 	' Example = 
 	'
-	'    arr(0) = "c:\temp\db1.accdb"
-	'    arr(1) = "c:\temp\db2.accdb"
-	'    arr(2) = "c:\temp\db3.accdb"
+	'	arr(0) = "c:\temp\db1.accdb"
+	'	arr(1) = "c:\temp\db2.accdb"
+	'	arr(2) = "c:\temp\db3.accdb"
 	'
-	'    wScript.Echo Decompose(arr)
+	'	wScript.Echo Decompose(arr)
 	'
 	' --------------------------------------------------------------	
 	Public Sub Decompose(ByRef arrDBNames, sExportPath)
@@ -494,11 +596,15 @@ Class clsMSAccess
 			' If no, show an error message and stop
 			If CheckIfFilesExists(arrDBNames) Then
 				' Ok, database(s) are well present, we can start
-
+				
+				iMin = LBound(arrDBNames)
+				iMax = UBound(arrDBNames)
+				
 				For i = iMin To iMax
 
 					If bVerbose Then 
-						wscript.echo "Process database " & arrDBNames(I)
+						wScript.Echo "Process database " & arrDBNames(I) & " " &  _
+							"(clsMSAccess::Decompose)"
 					End If
 
 					Call OpenDatabase(arrDBNames(I))
@@ -526,7 +632,8 @@ Class clsMSAccess
 						sOutFileName = sExportpath & "Forms\" & sOutFileName
 
 						If bVerbose Then 
-							WScript.Echo "  Export form " & obj.FullName & " to " & sOutFileName
+							wScript.Echo "  Export form " & obj.FullName & " " & _
+								"to " & sOutFileName & " (clsMSAccess::Decompose)"
 						End If
 
 						' 2 = acForm
@@ -541,13 +648,14 @@ Class clsMSAccess
 						sOutFileName = sExportpath & "Modules\" & sOutFileName
 
 						If bVerbose Then 
-							WScript.Echo "  Export module " & obj.FullName & " to " & sOutFileName
+							WScript.Echo "  Export module " & obj.FullName & " " & _
+								" to " & sOutFileName & " (clsMSAccess::Decompose)"
 						End If
 
 						' 5 = acModule
 						oApplication.SaveAsText 5, obj.FullName, sOutFileName
 
-    				Next
+					Next
 
 					For Each obj In oApplication.CurrentProject.AllMacros
 
@@ -555,7 +663,8 @@ Class clsMSAccess
 						sOutFileName = sExportpath & "Macros\" & sOutFileName
 
 						If bVerbose Then 
-							WScript.Echo "  Export macro " & obj.FullName & " to " & sOutFileName
+							WScript.Echo "  Export macro " & obj.FullName & " " & _
+								"to " & sOutFileName & " (clsMSAccess::Decompose)"
 						End If
 
 						' 4 = acMacro
@@ -563,13 +672,14 @@ Class clsMSAccess
 
 					Next
 					
-				    For Each obj In oApplication.CurrentProject.AllReports
+					For Each obj In oApplication.CurrentProject.AllReports
 
 						sOutFileName = obj.FullName & ".txt"
 						sOutFileName = sExportpath & "Reports\" & sOutFileName
 
 						If bVerbose Then 
-							WScript.Echo "  Export report " & obj.FullName & " to " & sOutFileName
+							WScript.Echo "  Export report " & obj.FullName & " " & _
+								"to " & sOutFileName & " (clsMSAccess::Decompose)"
 						End If
 
 						' 3 = acReport
