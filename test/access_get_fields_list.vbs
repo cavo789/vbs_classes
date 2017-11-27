@@ -1,13 +1,13 @@
 ' ===========================================================================
 '
 ' Author : Christophe Avonture
-' Date   : November 2017
+' Date	: November 2017
 '
-' Open a database, get the list of tables and for each of them, 
-' get the list of fields and a few properties like the type, the size, 
+' Open a database, get the list of tables and for each of them,
+' get the list of fields and a few properties like the type, the size,
 ' the shortest and longest value size (for text and memo fields)
 '
-' The output will be something like : 
+' The output will be something like :
 ' Database;TableName;FieldName;FieldType;FieldSize;ShortestSize;LongestSize;Position;Occurences;
 ' C:\Temp\db1.accdb;Bistel;RefDate;Date/Time;8;;1;1
 ' C:\Temp\db1.accdb;Bistel;BudgetType;Byte;1;;2;1
@@ -19,19 +19,36 @@
 ' C:\Temp\db1.accdb;Bistel;Article;Text;6;6;6;8;1
 ' C:\Temp\db1.accdb;departements;bud;Text;255;2;2;1;1
 '
-' More info and explanations of fields : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md
-'
-' Requires 
+' Requires
 ' ========
 '
-' 	* src\classes\MSAccess.vbs
+' * src\classes\MSAccess.vbs
+'
+' More info and explanations of fields : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist
 '
 ' ===========================================================================
 
 Option Explicit
 
+Sub ShowHelp()
+
+	wScript.echo " =========================================="
+	wScript.echo " = Scan for fields in MS Access databases ="
+	wScript.echo " =========================================="
+	wScript.echo ""
+	wScript.echo " Please specify the name of the database to scan; f.i. : "
+	wScript.echo " " & Wscript.ScriptName & " 'C:\Temp\db1.accdb'"
+	wScript.echo ""
+
+	wScript.echo "For more informations, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist"
+	wScript.echo ""
+
+	wScript.quit
+
+End sub
+
 ' Include the script library in this context
-Sub IncludeFile(sFileName) 
+Sub IncludeFile(sFileName)
 
 	Dim objFSO, objFile
 
@@ -47,7 +64,7 @@ Sub IncludeFile(sFileName)
 
 	Else
 
-		wScript.Echo "ERROR - IncludeFile - File " & sFileName & " not found!"
+		wScript.echo "ERROR - IncludeFile - File " & sFileName & " not found!"
 
 	End If
 
@@ -62,9 +79,9 @@ Sub IncludeClasses()
 	DIm sFolder
 
 	' Get fullpath for the needed classes files, located in the parent folder
-	' (this sample script is in the /src/test folder and the class is in 
+	' (this sample script is in the /src/test folder and the class is in
 	' the /src/classes folder)
-	
+
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
 	Set objFile = objFSO.GetFile(Wscript.ScriptName)
 	sFolder = objFSO.GetParentFolderName(objFile) & "\"
@@ -77,35 +94,45 @@ End Sub
 
 Dim cMSAccess
 Dim arrDBNames(0)
-Dim sFieldsList, sFileName
+Dim sFieldsList, sFileName, sFile
 Dim objFSO, objFile, oShell
 
-	' Includes external classes
-	Call IncludeClasses
+	' Get the first argument (f.i. "C:\Temp\db1.accdb")
+	If (wScript.Arguments.Count = 0) Then
 
-	Set cMSAccess = New clsMSAccess
+		Call ShowHelp
 
-	cMSAccess.Verbose = True
+	Else
 
-	arrDBNames(0) = "C:\Temp\db1.accdb"	
-	arrDBNames(1) = "C:\Temp\db2.accdb"
-	arrDBNames(2) = "C:\Temp\db3.accdb"
+		' Get the path specified on the command line
+		sFile = Wscript.Arguments.Item(0)
 
-	' Get the list of fields for each table in the specified databases
-	sFieldsList = cMSAccess.GetFieldsList(arrDBNames)
+		' Includes external classes
+		Call IncludeClasses
 
-	Set cMSAccess = Nothing
+		Set cMSAccess = New clsMSAccess
 
-	Set objFSO = CreateObject("Scripting.FileSystemObject")
+		cMSAccess.Verbose = True
 
-	' Finally, output the list into a flatfile and open it
-	sFileName = objFSO.GetSpecialFolder(2) & "\output.csv"
+		arrDBNames(0) = sFile
 
-	Set objFile = objFSO.CreateTextFile(sFileName, 2, True)
-	objFile.Write sFieldsList
-	objFile.Close
-	Set objFile = Nothing
+		' Get the list of fields for each table in the specified databases
+		sFieldsList = cMSAccess.GetFieldsList(arrDBNames)
 
-	Set oShell = WScript.CreateObject ("WScript.Shell")
-	oShell.run "notepad.exe """ & sFileName & ""
-	Set oShell = Nothing
+		Set cMSAccess = Nothing
+
+		Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+		' Finally, output the list into a flatfile and open it
+		sFileName = objFSO.GetSpecialFolder(2) & "\output.csv"
+
+		Set objFile = objFSO.CreateTextFile(sFileName, 2, True)
+		objFile.Write sFieldsList
+		objFile.Close
+		Set objFile = Nothing
+
+		Set oShell = WScript.CreateObject ("WScript.Shell")
+		oShell.run "notepad.exe """ & sFileName & ""
+		Set oShell = Nothing
+
+	End if

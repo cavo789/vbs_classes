@@ -1,1 +1,1 @@
-cscript access_get_fields_list.vbs //nologo
+cscript access_get_fields_list.vbs "C:\Temp\db1.mdb" //nologo

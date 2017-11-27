@@ -1,1 +1,1 @@
-cscript access_decompose.vbs //nologo
+cscript access_decompose.vbs "C:\Temp\db1.mdb" //nologo

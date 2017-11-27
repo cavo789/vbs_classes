@@ -1,12 +1,12 @@
 ' ===========================================================================
 '
 ' Author : Christophe Avonture
-' Date   : November 2017
+' Date	: November 2017
 '
 ' This script contains a VBS class to scan a folder structure and retrieve
 ' files with specific extensions (like, for instance : xls, xlsx, xlsm).
 '
-' The list of files will be outputted in a text file so that list can be 
+' The list of files will be outputted in a text file so that list can be
 ' used in a separate process
 '
 ' ===========================================================================
@@ -15,17 +15,18 @@ Option Explicit
 
 Class clsScanFolder
 
-	Private objFSO, objOutput
+	Private objFSO
+	Private objOutput
 	Private sOutputFileName
 	Private colExtensions
 	Private sSearchFolder
-	Private bVerbose 
+	Private bVerbose
 
 	Public Property Let verbose(bYesNo)
 		bVerbose = bYesNo
 	End Property
 
-	Private Sub Class_Initialize()	
+	Private Sub Class_Initialize()
 		bVerbose = False
 		Set objFSO = CreateObject("Scripting.FileSystemObject")
 		Set colExtensions = CreateObject("Scripting.Dictionary")
@@ -58,7 +59,7 @@ Class clsScanFolder
 	'
 	' List of extensions to search
 	'
-	' Example : 
+	' Example :
 	'
 	'		' Define the list of extensions to retrieve
 	'		Set cScanFolder = New clsScanFolder
@@ -74,7 +75,7 @@ Class clsScanFolder
 	' ------------------------------------------------------------------
 	'
 	' Recursive scan : scan a folder and its subfolders and retrieve the list
-	' of files having specific extensions. 
+	' of files having specific extensions.
 	'
 	' Each file found will be outputted in a .txt file for later use
 	'
@@ -84,7 +85,7 @@ Class clsScanFolder
 		Dim objFSO, objFolder, objSubFolder, objFile, colFiles
 
 		Set objFSO = CreateObject("Scripting.FileSystemObject")
-		Set objFolder = objFSO.GetFolder(sFolderName) 
+		Set objFolder = objFSO.GetFolder(sFolderName)
 
 		Set colFiles = objFolder.Files
 
@@ -99,16 +100,16 @@ Class clsScanFolder
 		' Call the subroutine for each subfolder within the original folder
 		For Each objSubFolder In objFolder.SubFolders
 			Call FileSearch(objSubFolder.Path)
-		Next	
+		Next
 
 	End Sub
 
 	' ------------------------------------------------------------------
 	' Start the search, scan the "sSearchFolder" and subfolders
-	' Example : 
+	' Example :
 	'
 	'		Set cScanFolder = New clsScanFolder
-	'		
+	'
 	'		cScanFolder.AddExtensions("xlsx")
 	'		cScanFolder.OutputFileName = "c:\temp\output.txt"
 	'		cScanFolder.SearchFolder = "c:\temp"
@@ -120,10 +121,10 @@ Class clsScanFolder
 	'		Set oShell = Nothing
 	'
 	' ------------------------------------------------------------------
-	Public Function Run() 
+	Public Function Run()
 
-		If bVerbose Then 
-			wscript.echo vbCrLf & "=== clsScanFolder::Run ===" & vbCrLf
+		If bVerbose Then
+			wScript.echo vbCrLf & "=== clsScanFolder::Run ===" & vbCrLf
 		End If
 
 		Call FileSearch(sSearchFolder)

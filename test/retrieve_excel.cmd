@@ -1,1 +1,1 @@
-cscript retrieve_excel.vbs C:\temp //nologo
+cscript retrieve_excel.vbs c:\temp //nologo

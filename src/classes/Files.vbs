@@ -4,6 +4,8 @@
 ' Date   : November 2017
 '
 ' Helpers to help working with files
+' 
+' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md
 '
 ' ===========================================================================
 
@@ -29,6 +31,7 @@ Class clsFiles
 	End Sub
 
 	' Create a text file
+	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#createtextfile
 	Public Sub CreateTextFile(ByVal sFileName, ByVal sContent)
 
 		If bVerbose Then 

@@ -1,8 +1,10 @@
 # MSAccess.vbs
 
+This script exposes a VB Script class for working with MS Access databases.
+
 ## Decompose
 
-Open a database and export every forms, macros, modules and reports code.
+Open a database and automate the extraction of any VBA code in a database (i.e. in `forms`, `macros`, `modules` and `reports`) and export them in a `/src` file where the database is stored.
 
 Contents will be saved in a /src folder.
 
@@ -15,7 +17,7 @@ Set cMSAccess = New clsMSAccess
 
 cMSAccess.Verbose = True
 
-arrDBNames(0) = "C:\Temp\db1.accdb"
+arrDBNames(0) = "c:\temp\db1.accdb"
 
 ' The second parameter is where sources files should be stored
 ' If not specified, will be in the same folder where the database is 
@@ -23,6 +25,19 @@ arrDBNames(0) = "C:\Temp\db1.accdb"
 Call cMSAccess.Decompose(arrDBNames, "")
 
 Set cMSAccess = Nothing
+```
+
+By calling this code, you'll get, for instance : 
+
+```text
+Process database c:\temp\db1.accdb
+   Export module getFigures to c:\temp\db1_accdb\src\Modules\getFigures.txt
+   Export module Helper to c:\temp\db1_accdb\src\Modules\Helper.txt
+   Export module Constants to c:\temp\db1_accdb\src\Modules\Constants.txt
+   Export module clsWindows to c:\temp\db1_accdb\src\Modules\clsWindows.txt
+   Export module clsFolder to c:\temp\db1_accdb\src\Modules\clsFolder.txt
+   Export module clsFile to c:\temp\db1_accdb\src\Modules\clsFile.txt
+   Export macro getFigures to c:\temp\db1_accdb\src\Macros\getFigures.txt
 ```
 
 ## GetFieldsList
@@ -52,21 +67,37 @@ Set cMSAccess = New clsMSAccess
 
 cMSAccess.Verbose = True
 
-arrDBNames(0) = "C:\Temp\db1.accdb"
-arrDBNames(1) = "C:\Temp\db2.accdb"
-arrDBNames(2) = "C:\Temp\db3.accdb"
+arrDBNames(0) = "c:\temp\db1.accdb"
+arrDBNames(1) = "c:\temp\db2.accdb"
+arrDBNames(2) = "c:\temp\db3.accdb"
 
 ' Get the list of fields for each table in the specified databases
+' sFieldsList will be a string containing a .csv content
 sFieldsList = cMSAccess.GetFieldsList(arrDBNames)
 
 Set cMSAccess = Nothing
+```
 
-wScript.echo sFieldList
+By calling this code, you'll get, for instance : 
+
+```text
+Database;TableName;FieldName;FieldType;FieldSize;ShortestSize;LongestSize;Position;Occurences
+C:\Temp\db1.accdb;Bistel;RefDate;Date/Time;8;;1;1
+C:\Temp\db1.accdb;Bistel;BudgetType;Byte;1;;2;1
+C:\Temp\db1.accdb;Bistel;OrganicDivision;Text (fixed width);2;;3;1
+C:\Temp\db1.accdb;Bistel;Program;Text (fixed width);1;;4;1
+C:\Temp\db1.accdb;Bistel;Published;Yes/No;1;;5;1
+C:\Temp\db1.accdb;Bistel;DescriptionDutch;Text;50;10;48;6;1
+C:\Temp\db1.accdb;Bistel;DescriptionFrench;Text;50;0;50;7;1
+C:\Temp\db1.accdb;Bistel;Article;Text;6;6;6;8;1
+C:\Temp\db1.accdb;departements;bud;Text;255;2;2;1;1
+C:\Temp\db2.accdb;Bistel;RefDate;Date/Time;8;;1;3
+C:\Temp\db3.accdb;Bistel;RefDate;Date/Time;8;;1;3
 ```
 
 ## GetListOfTables
 
-Get the list of tables of one or more MS Access databases
+Get the list of tables of one or more MS Access databases.
 
 ### Sample script 
 
@@ -75,11 +106,13 @@ See also the test script in folder `/test` or online : https://github.com/cavo78
 ```VB
 Set cMSAccess = New clsMSAccess
 
-arrDBNames(0) = "C:\Temp\db1.accdb"
-arrDBNames(1) = "C:\Temp\db2.accdb"
-arrDBNames(2) = "C:\Temp\db3.accdb"
+arrDBNames(0) = "c:\temp\db1.accdb"
+arrDBNames(1) = "c:\temp\db2.accdb"
+arrDBNames(2) = "c:\temp\db3.accdb"
 
-wScript.Echo cMSAccess.GetListOfTables(arrDBNames, false)
+' Get the list of tables in the specified databases
+' sTablesList will be a string containing a .csv content
+sTablesList = cMSAccess.GetListOfTables(arrDBNames, false)
 
 Set cMSAccess = Nothing
 ```
@@ -97,7 +130,7 @@ Set cMSAccess = New clsMSAccess
 
 cMSAccess.Verbose = True
 
-arrDBNames(0) = "C:\Temp\db1.accdb"
+arrDBNames(0) = "c:\temp\db1.accdb"
 
 Call cMSAccess.RemovePrefix(arrDBNames, "dbo_")
 
