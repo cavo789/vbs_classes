@@ -11,6 +11,7 @@
 '
 ' 	* src\classes\MSAccess.vbs
 '
+' More info and explanations of fields : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix
 ' ===========================================================================
 
 Option Explicit

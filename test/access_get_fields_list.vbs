@@ -19,7 +19,7 @@
 ' C:\Temp\db1.accdb;Bistel;Article;Text;6;6;6;8;1
 ' C:\Temp\db1.accdb;departements;bud;Text;255;2;2;1;1
 '
-' More info and explanations of fields : please read   https://github.com/cavo789/vbs_scripts/tree/master/src/classes/msaccess.md
+' More info and explanations of fields : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md
 '
 ' Requires 
 ' ========
@@ -35,7 +35,7 @@ Sub IncludeFile(sFileName)
 
 	Dim objFSO, objFile
 
-	Set objFSO = CreateObject("Scripting.FileSystemObject")    
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 	If (objFSO.FileExists(sFileName)) Then
 
@@ -65,14 +65,14 @@ Sub IncludeClasses()
 	' (this sample script is in the /src/test folder and the class is in 
 	' the /src/classes folder)
 	
-	Set objFSO = CreateObject("Scripting.FileSystemObject")		
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
 	Set objFile = objFSO.GetFile(Wscript.ScriptName)
 	sFolder = objFSO.GetParentFolderName(objFile) & "\"
 	sFolder = objFSO.GetParentFolderName(sFolder) & "\"
 	Set objFile = Nothing
 
 	IncludeFile(sFolder & "src\classes\MSAccess.vbs")
-	
+
 End Sub
 
 Dim cMSAccess
@@ -82,22 +82,24 @@ Dim objFSO, objFile, oShell
 
 	' Includes external classes
 	Call IncludeClasses
-	
+
 	Set cMSAccess = New clsMSAccess
-	
+
 	cMSAccess.Verbose = True
-	
-	arrDBNames(0) = "C:\Temp\db1.accdb"
-	
-	' Get the list of fields for each table 
+
+	arrDBNames(0) = "C:\Temp\db1.accdb"	
+	arrDBNames(1) = "C:\Temp\db2.accdb"
+	arrDBNames(2) = "C:\Temp\db3.accdb"
+
+	' Get the list of fields for each table in the specified databases
 	sFieldsList = cMSAccess.GetFieldsList(arrDBNames)
 
 	Set cMSAccess = Nothing
-	
-	Set objFSO = CreateObject("Scripting.FileSystemObject")		
-	
+
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+
 	' Finally, output the list into a flatfile and open it
-	sFileName = objFSO.GetSpecialFolder(2) & "\output.csv" 
+	sFileName = objFSO.GetSpecialFolder(2) & "\output.csv"
 
 	Set objFile = objFSO.CreateTextFile(sFileName, 2, True)
 	objFile.Write sFieldsList

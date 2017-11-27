@@ -3,14 +3,14 @@
 ' Author : Christophe Avonture
 ' Date   : November 2017
 '
-' Display the list of tables of a specific MS Access database 
-' (the file should exists)
+' Get the list of tables of one or more MS Access databases
 '
 ' Requires 
 ' ========
 '
 ' 	* src\classes\MSAccess.vbs
 '
+' More info and explanations of fields : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getlistoftables
 ' ===========================================================================
 
 Option Explicit

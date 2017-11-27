@@ -1,0 +1,1 @@
+cscript access_get_list_of_tables.vbs "C:\Temp\db1.accdb" //nologo

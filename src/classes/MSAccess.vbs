@@ -371,6 +371,8 @@ Class clsMSAccess
 	'
 	'	wScript.Echo GetFieldsList(arr)
 	'
+	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist
+	'
 	' --------------------------------------------------------------	
 	Public Function GetFieldsList(ByRef arrDBNames) 
 
@@ -509,6 +511,7 @@ Class clsMSAccess
 	'
 	'	wScript.Echo RemovePrefix(arr, "dbo_")
 	'
+	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix
 	' --------------------------------------------------------------	
 	Public Sub RemovePrefix(ByRef arrDBNames, sPrefix) 
 
