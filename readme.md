@@ -1,4 +1,4 @@
-# Windows - Script utilities for Windows & MS Office
+# Windows - Script utilities for Windows, MS Office and SQL Server
 
 > See also my [MS Access repository](https://github.com/cavo789/ms_access) which contains vba code for MS Access (to place in a module)
 
