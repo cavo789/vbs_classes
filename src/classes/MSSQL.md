@@ -1,15 +1,46 @@
 # MSSQL.vbs
 
-This class provide functionnalities for working with a SQL Server database
+This class provide functionnalities for working with a SQL Server database.
 
 ## Table of content
 
+- [CheckConnection](#checkconnection)
+	- [Sample script](#sample-script)
 - [CreateUserDSN](#createuserdsn)
+	- [Sample script](#sample-script)
+- [GetRecordSet](#getrecordset)
 	- [Sample script](#sample-script)
 - [GetTableContent](#gettablecontent)
 	- [Sample script](#sample-script)
 - [GetTableContentMarkdown](#gettablecontentmarkdown)
 	- [Sample script](#sample-script)
+
+## CheckConnection
+
+Check the connection to a SQL DB
+
+### Sample script
+
+See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_checkconnection.vbs for an example
+
+```VB
+Set cMSSQL = New clsMSSQL
+
+cMSSQL.Verbose = True
+
+cMSSQL.ServerName = "ServerName"
+cMSSQL.DatabaseName = "DatabaseName"
+
+bReturn = cMSSQL.CheckConnection
+
+If (bReturn) Then
+	wScript.echo "Connection is successfull"
+Else
+	wScript.echo "Oups, there is a problem"
+End If
+
+Set cMSSQL = Nothing
+```
 
 ## CreateUserDSN
 
@@ -32,6 +63,42 @@ wScript.echo cMSSQL.CreateUserDSN(array("dsn DB"))
 
 Set cMSSQL = Nothing
 ```
+
+## GetRecordSet
+
+Get a recordset from the SQL database
+
+### Sample script
+
+See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_Get_RecordSet.vbs for an example
+
+```VB
+
+Set cMSSQL = New clsMSSQL
+
+cMSSQL.Verbose = True
+
+cMSSQL.ServerName = cServerName
+cMSSQL.DatabaseName = cDatabaseName
+
+Set rs = cMSSQL.GetRecordSet("SELECT * FROM tblName")
+
+If Not (rs Is Nothing) Then
+
+	wScript.echo rs.RecordCount & " records have been found"
+
+	Do While Not rs.Eof
+		' Process rs.Fields("xxxx")
+		rs.MoveNext
+	Loop
+
+	rs.Close
+
+	Set rs = Nothing
+
+End if
+
+Set cMSSQL = Nothing
 
 ## GetTableContent
 

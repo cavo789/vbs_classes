@@ -149,7 +149,7 @@ Class clsMSSQL
 		Const adOpenStatic = 3
 		Const adLockOptimistic = 3
 
-		Dim objConnection, rs, fld
+		Dim conn, rs, fld
 		Dim sSQL, sReturn, sLine, sSeparator
 
 		If bVerbose Then
@@ -158,10 +158,10 @@ Class clsMSSQL
 
 		sReturn = ""
 
-		Set objConnection = CreateObject("ADODB.Connection")
+		Set conn = CreateObject("ADODB.Connection")
 		Set rs = CreateObject("ADODB.Recordset")
 
-		objConnection.Open DSN()
+		conn.Open DSN()
 
 		sSQL = "SELECT * FROM " & sTableName & ""
 
@@ -169,7 +169,7 @@ Class clsMSSQL
 			wScript.echo sSQL & vbCrLf
 		End If
 
-		rs.Open sSQL, objConnection, adOpenStatic, adLockOptimistic
+		rs.Open sSQL, conn, adOpenStatic, adLockOptimistic
 
 		rs.MoveFirst
 
@@ -214,11 +214,67 @@ Class clsMSSQL
 		rs.close
 
 		Set rs=nothing
-		Set objConnection=nothing
+		Set conn=nothing
 
 		p_GetTableContent = sReturn
 
 	End Function
+
+	' --------------------------------------------------------------
+	'
+	' Try to establish a connection to the server. Return True
+	' if connection is successfull
+	'
+	' --------------------------------------------------------------
+	Public Function CheckConnection()
+
+		Dim conn
+		Dim bReturn
+
+		If bVerbose Then
+			wScript.echo vbCrLf & "=== clsMSSQL::CheckConnection ===" & vbCrLf
+		End If
+
+		Set conn = CreateObject("ADODB.Connection")
+
+		On error Resume Next
+		conn.Open DSN()
+		On error Goto 0
+
+		bReturn = (conn.State = 1)
+
+		If conn.State <> 0 Then
+			conn.close
+		End if
+
+		Set conn = Nothing
+
+		CheckConnection = bReturn
+
+	End Function
+
+	Public Function GetRecordSet(ByVal sSQL)
+
+		Const adOpenStatic = 3
+		Const adLockOptimistic = 3
+
+		Dim conn, rs
+
+		Set conn = CreateObject("ADODB.Connection")
+		Set rs = CreateObject("ADODB.Recordset")
+
+		conn.Open DSN()
+
+		Set rs = CreateObject("ADODB.Recordset")
+		rs.Open sSQL, conn, adOpenStatic, adLockOptimistic
+
+		If Not (rs.Eof) Then
+			rs.MoveFirst
+		End If
+
+		Set GetRecordSet = rs
+
+	End function
 
 	' --------------------------------------------------------------
 	' Read an entire table and generate a string with the table
