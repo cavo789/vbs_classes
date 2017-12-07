@@ -1,32 +1,30 @@
-' ====================================================================
+' =====================================================================
 '
 ' Author : Christophe Avonture
-' Date	: November 2017
+' Date	: November/December 2017
 '
-' Open a database, get the list of tables and if tablename start with a
-' given prefix (like "dbo_"), remove it
+' Check if a specific table exists in a MS Access database
 '
 ' Requires
 ' ========
 '
 ' * src\classes\MSAccess.vbs
 '
-' To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix
-' ====================================================================
+' To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#checkiftableexists
+' =====================================================================
 
 Option Explicit
 
 Sub ShowHelp()
 
-	wScript.echo " ==================================================="
-	wScript.echo " = Remove prefix for tables of MS Access databases ="
-	wScript.echo " ==================================================="
+	wScript.echo " =============================================="
+	wScript.echo " = CheckIfTableExists for MS Access databases ="
+	wScript.echo " =============================================="
 	wScript.echo ""
 	wScript.echo " Please specify the name of the database to process; f.i. : "
-	wScript.echo " " & Wscript.ScriptName & " 'C:\Temp\db1.accdb'"
+	wScript.echo " " & wScript.ScriptName & " 'C:\Temp\db1.accdb'"
 	wScript.echo ""
-
-	wScript.echo "To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix"
+	wScript.echo "To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#checkiftableexists"
 	wScript.echo ""
 
 	wScript.quit
@@ -80,8 +78,8 @@ Sub IncludeClasses()
 End Sub
 
 Dim cMSAccess
+Dim sFile, bExists
 Dim arrDBNames(0)
-Dim sFile
 
 	' Get the first argument (f.i. "C:\Temp\db1.accdb")
 	If (wScript.Arguments.Count = 0) Then
@@ -98,11 +96,18 @@ Dim sFile
 
 		Set cMSAccess = New clsMSAccess
 
-		cMSAccess.Verbose = True
+		cMSAccess.DatabaseName = sFile
+		cMSAccess.OpenDatabase
 
-		arrDBNames(0) = sFile
+		bExists = cMSAccess.CheckIfTableExists("users")
 
-		Call cMSAccess.RemovePrefix(arrDBNames, "dbo_")
+		If (bExists) Then
+			wScript.echo "The table users exists"
+		Else
+			wScript.echo "There is no table called 'users' in the db"
+		End If
+
+		cMSAccess.CloseDatabase
 
 		Set cMSAccess = Nothing
 

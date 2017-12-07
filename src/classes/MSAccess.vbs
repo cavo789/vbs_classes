@@ -1,7 +1,7 @@
-' ===========================================================================
+' ====================================================================
 '
 ' Author : Christophe Avonture
-' Date	: November 2017
+' Date	: November-December 2017
 '
 ' MS Access helper
 '
@@ -9,8 +9,7 @@
 ' to get the list of tables in a database.
 '
 ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md
-'
-' ===========================================================================
+' ====================================================================
 
 Option Explicit
 
@@ -19,12 +18,20 @@ Class clsMSAccess
 	Private oApplication
 	Private bVerbose
 
+	Private sDatabaseName
 	Private sDelim
 
 	Public Property Let verbose(bYesNo)
-
 		bVerbose = bYesNo
+	End Property
 
+	Public Property Let DatabaseName(ByVal sFileName)
+		sDatabaseName = sFileName
+	End Property
+
+	Public Property Get DSN()
+		DSN = "Provider=Microsoft.ACE.OLEDB.12.0; " & _
+			"Data Source=" & sDatabaseName
 	End Property
 
 	' Define the delimiter to use for the CSV file (; or , or ...)
@@ -37,35 +44,24 @@ Class clsMSAccess
 	Private Sub Class_Initialize()
 
 		bVerbose = False
+		sDatabaseName = ""
 		sDelim = ";"
 
-		Set oApplication = CreateObject("Access.Application")
-		oApplication.Visible = True
-
-	End Sub
-
-	Private Sub Class_Terminate()
-
-		oApplication.Quit
 		Set oApplication = Nothing
 
 	End Sub
 
-	Public Sub OpenDatabase(sFileName)
-
-		If (Right(sFileName,4) = ".adp") Then
-			oApplication.OpenAccessProject sFileName
-		Else
-			oApplication.OpenCurrentDatabase sFileName
+	Private Sub Class_Terminate()
+		If Not (oApplication Is Nothing) Then
+			oApplication.Quit
+			Set oApplication = Nothing
 		End If
-
 	End Sub
 
-	Public Sub CloseDatabase()
-
-		oApplication.CloseCurrentDatabase
-
-	End Sub
+	Private Function IIf(expr, truepart, falsepart)
+		IIf = falsepart
+		If expr Then IIf = truepart
+	End Function
 
 	' Return the table type in a more readable format
 	Private Function GetTableType(ByVal wType)
@@ -152,10 +148,12 @@ Class clsMSAccess
 
 	End Sub
 
+	' --------------------------------------------------------------
 	' FieldTypeName
 	' by Allen Browne, allen@allenbrowne.com. Updated June 2006.
 	' copied from http://allenbrowne.com/func-06.html
 	' (No license information found at that URL.)
+	' --------------------------------------------------------------
 	Private Function GetFieldTypeName(FieldType, FieldAttributes)
 
 		Dim sReturn
@@ -204,6 +202,35 @@ Class clsMSAccess
 		GetFieldTypeName = sReturn
 
 	End Function
+
+	' --------------------------------------------------------------
+	' Open the database
+	' --------------------------------------------------------------
+	Public Sub OpenDatabase()
+
+		If (oApplication is Nothing) then
+			Set oApplication = CreateObject("Access.Application")
+			oApplication.Visible = True
+		End if
+
+		If (Right(sDatabaseName,4) = ".adp") Then
+			oApplication.OpenAccessProject sDatabaseName
+		Else
+			oApplication.OpenCurrentDatabase sDatabaseName
+		End If
+
+	End Sub
+
+	' --------------------------------------------------------------
+	' Close the database
+	' --------------------------------------------------------------
+	Public Sub CloseDatabase()
+
+		If Not (oApplication is Nothing) then
+			oApplication.CloseCurrentDatabase
+		End if
+
+	End Sub
 
 	' --------------------------------------------------------------
 	'
@@ -264,7 +291,8 @@ Class clsMSAccess
 							"(clsMSAccess::GetListOfTables)"
 					End If
 
-					Call OpenDatabase(arrDBNames(I))
+					sDatabaseName = arrDBNames(I)
+					Call OpenDatabase()
 
 					If bOnlyForeign then
 
@@ -417,7 +445,8 @@ Class clsMSAccess
 							"(clsMSAccess::GetFieldsList)"
 					End If
 
-					Call OpenDatabase(arrDBNames(I))
+					sDatabaseName = arrDBNames(I)
+					Call OpenDatabase()
 
 					oApplication.CurrentDB.TableDefs.Refresh
 
@@ -550,7 +579,8 @@ Class clsMSAccess
 							"(clsMSAccess::RemovePrefix)"
 					End If
 
-					Call OpenDatabase(arrDBNames(I))
+					sDatabaseName = arrDBNames(I)
+					Call OpenDatabase()
 
 					For Each objTable in oApplication.CurrentData.AllTables
 
@@ -634,7 +664,8 @@ Class clsMSAccess
 							"(clsMSAccess::Decompose)"
 					End If
 
-					Call OpenDatabase(arrDBNames(I))
+					sDatabaseName = arrDBNames(I)
+					Call OpenDatabase()
 
 					Set objFSO = CreateObject("Scripting.FileSystemObject")
 
@@ -726,6 +757,149 @@ Class clsMSAccess
 				"You must provide an array with filenames."
 
 		End If
+
+	End Sub
+
+	' --------------------------------------------------------------
+	'
+	' Check if a table exists
+	'
+	' Parameters :
+	'
+	' * sDSN 		: A valid connection string to the database in which
+	'					the check should be made'
+	' * sTableName	: The name of the table for which the control
+	'					should be done
+	'
+	' Example :
+	'
+	'	sDSN = "Provider=Microsoft.ACE.OLEDB.12.0; " & _
+	'		Data Source=C:\temp\db1.mdb"
+	'
+	'	If CheckIfTableExists(sDSN, "aTableName") then
+	'		' ...
+	'	End If
+	'
+	' --------------------------------------------------------------
+	Public Function CheckIfTableExists(ByVal sTableName)
+
+		Dim cat, tbl
+		Dim bFound
+
+		bFound = False
+
+		Set cat = CreateObject("ADOX.Catalog")
+		cat.ActiveConnection = DSN()
+
+		' Be sure that the catalog is up-to-date
+		cat.Tables.Refresh
+
+		' Loop
+		For Each tbl In cat.Tables
+			If (tbl.Name = sTableName) Then
+				bFound = True
+				Exit For
+			End If
+		Next
+
+		Set tbl = nothing
+		Set cat = Nothing
+
+		If bVerbose Then
+			wScript.echo vbCrLf & "=== clsMSAccess::CheckIfTableExists ===" & vbCrLf & "Table " & sTableName & " " & _
+			Iif(bFound, "already ", "doesn't ") & "exists"
+		End If
+
+		CheckIfTableExists = bFound
+
+	End Function
+
+	' --------------------------------------------------------------
+	'
+	' Add an "attached table" in the database
+	'
+	' Parameters :
+	'
+	' * sServerName	: Name of the server where the DB is stored
+	' * sDBName		: Name of the distant database
+	' * sTableName	: Name of the table in the distant database
+	'					(f.i. dbo.Users)
+	' * sLocalTable	: Name of the current database (f.i. dbo_Users)
+	' * bTrusted	: True when the connection should be made with the user's
+	'					credentials
+	' * sUserID		: If bTrusted=False, user name to user (f.i. userTest)
+	' * sPassword	: If bTrusted=False, password of that user (f.i. pwdTest)
+	' * bStoredPWD	: True when the password should be stored and not prompted
+	'					on each first use
+	'
+	' Example :
+	'
+	'	cMSAccess.DatabaseName = "C:\temp\db1.mdb"
+	'
+	'	If cMSAccess.CheckIfTableExists("aTableName") then
+	'		' ...
+	'	End If
+	'
+	' --------------------------------------------------------------
+	Public Sub AttachTable(ByVal sServerName, _
+		ByVal sDBName, ByVal sTableName, ByVal sLocalTable, _
+		ByVal bTrusted, ByVal sUserID, ByVal sPassword, _
+		ByVal bStoredPWD)
+
+		Dim sSQLDSN
+		Dim cat, tbl
+		Dim bContinue
+
+		' First check if the table already exists or not
+		bContinue = Not(CheckIfTableExists(sLocalTable))
+
+		If bContinue Then
+			' Continue when the table wasn't found; add it
+
+			If bVerbose Then
+				wScript.echo vbCrLf & "=== clsMSAccess::AttachTable ===" & vbCrLf & "Add a link to " & sTableName & " (" & _
+				"local name : " & sLocalTable & ")"
+			End If
+
+			' Establish a connection to the database
+			Set cat = CreateObject("ADOX.Catalog")
+			cat.ActiveConnection = DSN()
+
+			' Add a new table in the database
+			Set tbl = CreateObject("ADOX.Table")
+			Set tbl.ParentCatalog = cat
+
+			' Local name (f.i. dbo_Users)
+			tbl.Name = sLocalTable
+
+			' Prepare the DSN to access to remote database
+			sSQLDSN = "ODBC;Driver={SQL Server};" & _
+				"Server={" & sServerName & "};" & _
+				"Database={" & sDBName & "};"
+
+			If (bTrusted) Then
+				sSQLDSN = sSQLDSN & "Trusted_Connection=Yes;"
+			Else
+				sSQLDSN = sSQLDSN & "UID=" & sUserID & ";" & _
+					"PWD=" & sPassword & ";"
+			End if
+
+			' Add properties
+		 	tbl.Properties("Jet OLEDB:Link Provider String") = sSQLDSN
+			tbl.Properties("Jet OLEDB:Remote Table Name") = sTableName
+			tbl.Properties("Jet OLEDB:Create Link") = True
+
+			' Store credentials (just like dbAttachSavePWD does) or not
+			tbl.Properties("Jet OLEDB:Cache Link Name/Password") = bStoredPWD
+
+			' And append the table
+			cat.Tables.Append tbl
+			cat.Tables.Refresh
+
+			set tbl = nothing
+			set cat = Nothing
+
+		End If ' If bContinue Then
 
 	End Sub
 

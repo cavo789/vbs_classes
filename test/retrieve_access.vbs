@@ -1,4 +1,4 @@
-' ===========================================================================
+' ======================================================================
 '
 ' Author : Christophe Avonture
 ' Date	: November 2017
@@ -13,7 +13,7 @@
 '
 ' * src\classes\ScanFolder.vbs
 '
-' ===========================================================================
+' ======================================================================
 
 Option Explicit
 
@@ -40,7 +40,7 @@ Sub IncludeFile(sFileName)
 
 	If (objFSO.FileExists(sFileName)) Then
 
-		Set objFile = objFSO.OpenTextFile(sFileName, 1)  ' ForReading
+		Set objFile = objFSO.OpenTextFile(sFileName, 1) ' ForReading
 
 		ExecuteGlobal objFile.ReadAll()
 
@@ -48,7 +48,8 @@ Sub IncludeFile(sFileName)
 
 	Else
 
-		wScript.echo "ERROR - IncludeFile - File " & sFileName & " not found!"
+		wScript.echo "ERROR - IncludeFile - File " & _
+			sFileName & " not found!"
 
 	End If
 
@@ -61,9 +62,9 @@ Sub IncludeClasses()
 
 Dim objFSO, objFile
 
-	' Get fullpath for the needed classes files, located in the parent folder
-	' (this sample script is in the /src/test folder and the class is in
-	' the /src/classes folder)
+	' Get fullpath for the needed classes files, located in the parent
+	' folder (this sample script is in the /src/test folder and the
+	' class is in the /src/classes folder)
 
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
 	Set objFile = objFSO.GetFile(Wscript.ScriptName)
@@ -92,7 +93,8 @@ Dim sFolder
 		Set cScanFolder = New clsScanFolder
 
 		' Create the ouput file in the temporary folder (2)
-		' Will be something like C:\Users\username\AppData\Local\Temp\output.txt
+		' Will be something like
+		' C:\Users\username\AppData\Local\Temp\output.txt
 		Set objFSO = CreateObject("Scripting.FileSystemObject")
 		sFolder = objFSO.GetSpecialFolder(2) & "\"
 		cScanFolder.OutputFileName = sFolder & "output.txt"

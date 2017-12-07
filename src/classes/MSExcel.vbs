@@ -1,20 +1,21 @@
-' ===========================================================================
+' ====================================================================
 '
 ' Author : Christophe Avonture
-' Date   : November 2017
+' Date	: November 2017
 '
 ' MS Excel helper
 '
-' This class provide functionnalities like the function OpenCSV() 
-' 
-' ===========================================================================
+' This class provide functionnalities to facilitate automation of
+' MS Excel
+'
+' ====================================================================
 
 Option Explicit
 
 Class clsMSExcel
 
 	Private oApplication
-	Private bVerbose 
+	Private bVerbose
 
 	Public Property Let verbose(bYesNo)
 		bVerbose = bYesNo
@@ -26,7 +27,7 @@ Class clsMSExcel
 		Set oApplication = CreateObject("Excel.Application")
 
 		oApplication.Visible = True
-		oApplication.ScreenUpdating = True		
+		oApplication.ScreenUpdating = True
 	End Sub
 
 	Private Sub Class_Terminate()
@@ -37,9 +38,14 @@ Class clsMSExcel
 		oApplication.Quit
 	End Sub
 
+	' --------------------------------------------------------------
+	'
 	' Open a CSV file, correctly manage the split into columns,
 	' add a title, rename the tab
-	Public Sub OpenCSV(ByVal sFileName, ByVal sTitle, ByVal sSheetCaption)
+	'
+	' --------------------------------------------------------------
+	Public Sub OpenCSV(ByVal sFileName, ByVal sTitle, _
+		ByVal sSheetCaption)
 
 		Dim objFSO
 		Dim wCol
@@ -49,14 +55,16 @@ Class clsMSExcel
 		If (objFSO.FileExists(sFileName)) Then
 
 			If bVerbose Then
-				wscript.echo "Open " & sFileName & " (clsMSExcel::OpenCSV)"
+				wScript.echo "Open " & sFileName & _
+					" (clsMSExcel::OpenCSV)"
 			End If
 
 			' 1 =  xlDelimited
 			' Delimiter is ";"
 			oApplication.Workbooks.OpenText sFileName,,,1,,,,,,,True,";"
 
-			' If a title has been specified, add quickly a small templating
+			' If a title has been specified,
+			' add quickly a small templating
 			If (Trim(sTitle) <> "") Then
 
 				With oApplication.ActiveSheet
@@ -68,13 +76,14 @@ Class clsMSExcel
 					.Range("A2").Value = Trim(sTitle)
 
 					With .Range(.Cells(2, 1), .Cells(2, wCol))
-						.HorizontalAlignment = 7 ' xlCenterAcrossSelection
+						' 7 = xlCenterAcrossSelection
+						.HorizontalAlignment = 7
 						.font.bold = True
 						.font.size = 14
 					End with
 
 					.Cells(4,1).AutoFilter
-					
+
 					.Columns.EntireColumn.AutoFit
 
 					.Cells(5,1).Select
@@ -83,10 +92,10 @@ Class clsMSExcel
 
 				oApplication.ActiveWindow.DisplayGridLines = False
 				oApplication.ActiveWindow.FreezePanes = true
-				
+
 			End If
 
-			If (Trim(sSheetCaption) <> "") Then 
+			If (Trim(sSheetCaption) <> "") Then
 				oApplication.ActiveSheet.Name = sSheetCaption
 			End If
 
@@ -96,23 +105,24 @@ Class clsMSExcel
 
 	Public Sub CloseFile
 		oApplication.Workbooks(1).Close False
-		
 	End Sub
 
 	Public Sub SaveFile(ByVal sFileName)
-	
+
 		If (bVerbose) Then
-			wScript.Echo "Save file " & sFileName & " (clsMSExcel::SaveFile)"
+			wScript.echo "Save file " & sFileName & _
+				" (clsMSExcel::SaveFile)"
 		End If
-		
+
 		Set objFSO = CreateObject("Scripting.FileSystemObject")
 		If (objFSO.FileExists(sFileName)) Then
 			Call objFSO.DeleteFile (sFileName)
 		End If
 		Set objFSO = Nothing
 
-		oApplication.ActiveWorkbook.SaveAs sFileName, 51 ' xlWorkbookDefault
-		
+		' 51 = xlWorkbookDefault
+		oApplication.ActiveWorkbook.SaveAs sFileName, 51
+
 	End Sub
 
 End Class

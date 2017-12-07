@@ -1,0 +1,1 @@
+cscript access_check_table.vbs "C:\Temp\db1.mdb" //nologo

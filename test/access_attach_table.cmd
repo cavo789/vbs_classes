@@ -1,0 +1,1 @@
+cscript access_attach_table.vbs "C:\Temp\db1.mdb" //nologo

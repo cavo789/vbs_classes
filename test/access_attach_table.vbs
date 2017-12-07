@@ -1,32 +1,30 @@
-' ====================================================================
+' =====================================================================
 '
 ' Author : Christophe Avonture
-' Date	: November 2017
+' Date	: November/December 2017
 '
-' Open a database, get the list of tables and if tablename start with a
-' given prefix (like "dbo_"), remove it
+' Add a new attached-table in the MS Access database.
 '
 ' Requires
 ' ========
 '
 ' * src\classes\MSAccess.vbs
 '
-' To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix
-' ====================================================================
+' To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#attachedtable
+' =====================================================================
 
 Option Explicit
 
 Sub ShowHelp()
 
-	wScript.echo " ==================================================="
-	wScript.echo " = Remove prefix for tables of MS Access databases ="
-	wScript.echo " ==================================================="
+	wScript.echo " ======================================="
+	wScript.echo " = AttachTable for MS Access databases ="
+	wScript.echo " ======================================="
 	wScript.echo ""
 	wScript.echo " Please specify the name of the database to process; f.i. : "
-	wScript.echo " " & Wscript.ScriptName & " 'C:\Temp\db1.accdb'"
+	wScript.echo " " & wScript.ScriptName & " 'C:\Temp\db1.accdb'"
 	wScript.echo ""
-
-	wScript.echo "To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix"
+	wScript.echo "To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#attachtable"
 	wScript.echo ""
 
 	wScript.quit
@@ -80,8 +78,8 @@ Sub IncludeClasses()
 End Sub
 
 Dim cMSAccess
+Dim sFile, bExists
 Dim arrDBNames(0)
-Dim sFile
 
 	' Get the first argument (f.i. "C:\Temp\db1.accdb")
 	If (wScript.Arguments.Count = 0) Then
@@ -98,11 +96,19 @@ Dim sFile
 
 		Set cMSAccess = New clsMSAccess
 
-		cMSAccess.Verbose = True
+		cMSAccess.DatabaseName = sFile
+		cMSAccess.OpenDatabase
 
-		arrDBNames(0) = sFile
+		bExists = cMSAccess.CheckIfTableExists("users")
 
-		Call cMSAccess.RemovePrefix(arrDBNames, "dbo_")
+		If Not (bExists) Then
+			' SQL Servername, DatabaseName, Source table name,
+			' local table name and True for "Use trusted connection"
+			cMSAccess.AttachTable("Server", "DBName", "dbo.users", _
+				"users", True)
+		End If
+
+		cMSAccess.CloseDatabase
 
 		Set cMSAccess = Nothing
 

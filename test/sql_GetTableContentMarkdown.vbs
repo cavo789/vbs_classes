@@ -1,4 +1,4 @@
-' =======================================================================
+' =================================================================
 '
 ' Author : Christophe Avonture
 ' Date	: December 2017
@@ -12,7 +12,7 @@
 ' * src\classes\MSSQL.vbs
 '
 ' More info and explanations : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSSQL.md#
-' =======================================================================
+' =================================================================
 
 Option Explicit
 

@@ -1,10 +1,10 @@
 ' ===========================================================================
 '
 ' Author : Christophe Avonture
-' Date   : November 2017
+' Date	: November 2017
 '
 ' Helpers to help working with files
-' 
+'
 ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md
 '
 ' ===========================================================================
@@ -14,13 +14,13 @@ Option Explicit
 Class clsFiles
 
 	Dim objFSO, objFile
-	
-	Private bVerbose 
+
+	Private bVerbose
 
 	Public Property Let verbose(bYesNo)
 		bVerbose = bYesNo
 	End Property
-	
+
 	Private Sub Class_Initialize()
 		bVerbose = False
 		Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -34,16 +34,20 @@ Class clsFiles
 	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#createtextfile
 	Public Sub CreateTextFile(ByVal sFileName, ByVal sContent)
 
-		If bVerbose Then 
-			wscript.echo "Create file " & sFileName & " " & _
+		If bVerbose Then
+			wScript.echo "Create file " & sFileName & " " & _
 				"(clsFiles::CreateTextFile)"
 		End If
 
 		Set objFile = objFSO.CreateTextFile(sFileName, 2, True)
 		objFile.Write sContent
 		objFile.Close
-		Set objFile = Nothing	
-		
+		Set objFile = Nothing
+
 	End Sub
+
+	Public Function FileExists(ByVal sFileName)
+		FileExists = objFSO.FileExists(sFileName)
+	End Function
 
 End Class

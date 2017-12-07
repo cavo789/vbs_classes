@@ -22,6 +22,12 @@ Provide functionnalities for working with MS Excel workbooks.
 
 See [documentation](https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md)
 
+## classes/MSSQL.vbs
+
+Provide functionnalities for working with SQL Server databases.
+
+See [documentation](https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSSQL.md)
+
 ## classes/ScanFolder.vbs
 
 ScanFolder is aiming to scan recursively a folder and search for f.i. text files (`.txt`, `.csv`, `.md`, ...), Excel files (`.xlsx`, `.xlam`, ...), collect the list of filenames and output them in a text file so that file can be used by an another business logic.

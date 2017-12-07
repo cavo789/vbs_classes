@@ -2,6 +2,13 @@
 
 This script exposes a VB Script class for working with MS Excel workbooks.
 
+## Table of content
+
+- [OpenCSV](#opencsv)
+	- [Sample script](#sample-script)
+- [Save](#save)
+	- [Sample script](#sample-script)
+
 ## OpenCSV
 
 Open a CSV file and convert it to a .xlsx file by adding a small template, title, auto-filter, FreezePanes, ...

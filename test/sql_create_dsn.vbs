@@ -1,4 +1,4 @@
-' =======================================================================
+' ===================================================================
 '
 ' Author : Christophe Avonture
 ' Date	: December 2017
@@ -10,7 +10,7 @@
 '
 ' * src\classes\MSSQL.vbs
 '
-'=======================================================================
+' ===================================================================
 
 Option Explicit
 
@@ -26,11 +26,12 @@ Sub IncludeFile(sFileName)
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 	If (objFSO.FileExists(sFileName)) Then
-		Set objFile = objFSO.OpenTextFile(sFileName, 1)  ' ForReading
+		Set objFile = objFSO.OpenTextFile(sFileName, 1) ' ForReading
 		ExecuteGlobal objFile.ReadAll()
 		objFile.close
 	Else
-		wScript.echo "ERROR - IncludeFile - File " & sFileName & " not found!"
+		wScript.echo "ERROR - IncludeFile - File " & _
+			sFileName & " not found!"
 	End If
 
 	Set objFSO = Nothing
@@ -43,9 +44,9 @@ Sub IncludeClasses()
 	Dim objFSO, objFile
 	DIm sFolder
 
-	' Get fullpath for the needed classes files, located in the parent folder
-	' (this sample script is in the /src/test folder and the class is in
-	' the /src/classes folder)
+	' Get fullpath for the needed classes files, located in the parent
+	' folder (this sample script is in the /src/test folder and the class
+	' is in the /src/classes folder)
 
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
 	Set objFile = objFSO.GetFile(Wscript.ScriptName)

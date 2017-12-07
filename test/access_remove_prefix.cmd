@@ -1,1 +1,1 @@
-cscript access_remove_prefix.vbs "C:\Temp\db1.mdb" //nologo
+%WINDIR%\System32\cscript.exe access_remove_prefix.vbs "C:\Temp\db1.mdb" //nologo

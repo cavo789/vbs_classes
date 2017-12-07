@@ -1,4 +1,4 @@
-' ===========================================================================
+' ====================================================================
 '
 ' Author : Christophe Avonture
 ' Date	: November 2017
@@ -24,9 +24,9 @@
 '
 ' * src\classes\MSAccess.vbs
 '
-' More info and explanations of fields : please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist
+' To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist
 '
-' ===========================================================================
+' ====================================================================
 
 Option Explicit
 
@@ -40,7 +40,7 @@ Sub ShowHelp()
 	wScript.echo " " & Wscript.ScriptName & " 'C:\Temp\db1.accdb'"
 	wScript.echo ""
 
-	wScript.echo "For more informations, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist"
+	wScript.echo "To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist"
 	wScript.echo ""
 
 	wScript.quit
@@ -56,7 +56,7 @@ Sub IncludeFile(sFileName)
 
 	If (objFSO.FileExists(sFileName)) Then
 
-		Set objFile = objFSO.OpenTextFile(sFileName, 1)  ' ForReading
+		Set objFile = objFSO.OpenTextFile(sFileName, 1) ' ForReading
 
 		ExecuteGlobal objFile.ReadAll()
 
@@ -64,7 +64,8 @@ Sub IncludeFile(sFileName)
 
 	Else
 
-		wScript.echo "ERROR - IncludeFile - File " & sFileName & " not found!"
+		wScript.echo "ERROR - IncludeFile - File " & _
+			sFileName & " not found!"
 
 	End If
 
@@ -78,9 +79,9 @@ Sub IncludeClasses()
 	Dim objFSO, objFile
 	DIm sFolder
 
-	' Get fullpath for the needed classes files, located in the parent folder
-	' (this sample script is in the /src/test folder and the class is in
-	' the /src/classes folder)
+	' Get fullpath for the needed classes files, located in the parent
+	' folder (this sample script is in the /src/test folder and the
+	' class is in the /src/classes folder)
 
 	Set objFSO = CreateObject("Scripting.FileSystemObject")
 	Set objFile = objFSO.GetFile(Wscript.ScriptName)
@@ -116,7 +117,8 @@ Dim objFSO, objFile, oShell
 
 		arrDBNames(0) = sFile
 
-		' Get the list of fields for each table in the specified databases
+		' Get the list of fields for each table in the
+		' specified databases
 		sFieldsList = cMSAccess.GetFieldsList(arrDBNames)
 
 		Set cMSAccess = Nothing

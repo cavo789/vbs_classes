@@ -1,0 +1,1 @@
+cscript access_open_database.vbs "C:\Temp\db1.mdb" //nologo
