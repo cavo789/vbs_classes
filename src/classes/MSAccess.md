@@ -5,19 +5,12 @@ This script exposes a VB Script class for working with MS Access databases.
 ## Table of content
 
 - [AttachTable](#attachtable)
-	- [Sample script](#sample-script)
 - [CheckIfTableExists](#checkiftableexists)
-	- [Sample script](#sample-script)
 - [Decompose](#decompose)
-	- [Sample script](#sample-script)
 - [GetFieldsList](#getfieldslist)
-	- [Sample script](#sample-script)
 - [GetListOfTables](#getlistoftables)
-	- [Sample script](#sample-script)
 - [OpenDatabase](#opendatabase)
-	- [Sample script](#sample-script)
 - [RemovePrefix](#removeprefix)
-	- [Sample script](#sample-script)
 
 ## AttachTable
 
@@ -26,7 +19,7 @@ Add a new attached-table in the MS Access database.
 ### Sample script
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_attach_table.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 cMSAccess.DatabaseName = "c:\temp\db1.accdb"
@@ -54,7 +47,7 @@ This function can be used before running a SQL statement, before adding a new at
 ### Sample script
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_check_table.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 cMSAccess.DatabaseName = "c:\temp\db1.accdb"
@@ -80,7 +73,7 @@ Open a database and automate the extraction of `forms`, `macros`, `modules` and 
 ### Sample script
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_decompose.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 cMSAccess.Verbose = True
@@ -130,7 +123,7 @@ This function will scan every tables of a MS Access database and will generate a
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_get_fields_list.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 cMSAccess.Verbose = True
@@ -173,7 +166,7 @@ Get the list of tables of one or more MS Access databases.
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_get_list_of_tables.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 arrDBNames(0) = "c:\temp\db1.accdb"
@@ -197,7 +190,7 @@ Open the MS Access interface and load a given database.
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_open_database.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 cMSAccess.DatabaseName = "c:\temp\db1.accdb"
@@ -218,7 +211,7 @@ This script will scan the specified databases and will loop accross all tables :
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/access_remove_prefix.vbs for an example
 
-```VB
+```vbnet
 Set cMSAccess = New clsMSAccess
 
 cMSAccess.Verbose = True

@@ -5,15 +5,10 @@ This class provide functionnalities for working with a SQL Server database.
 ## Table of content
 
 - [CheckConnection](#checkconnection)
-	- [Sample script](#sample-script)
 - [CreateUserDSN](#createuserdsn)
-	- [Sample script](#sample-script)
 - [GetRecordSet](#getrecordset)
-	- [Sample script](#sample-script)
 - [GetTableContent](#gettablecontent)
-	- [Sample script](#sample-script)
 - [GetTableContentMarkdown](#gettablecontentmarkdown)
-	- [Sample script](#sample-script)
 
 ## CheckConnection
 
@@ -23,7 +18,7 @@ Check the connection to a SQL DB
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_checkconnection.vbs for an example
 
-```VB
+```vbnet
 Set cMSSQL = New clsMSSQL
 
 cMSSQL.Verbose = True
@@ -50,7 +45,7 @@ Create a User DSN to access a database through ODBC.
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_create_dsn.vbs for an example
 
-```VB
+```vbnet
 Set cMSSQL = New clsMSSQL
 
 cMSSQL.Verbose = True
@@ -72,7 +67,7 @@ Get a recordset from the SQL database
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_Get_RecordSet.vbs for an example
 
-```VB
+```vbnet
 
 Set cMSSQL = New clsMSSQL
 
@@ -113,7 +108,7 @@ Read an entire table and generate a string with the table content. This string c
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_GetTableContent.vbs for an example
 
-```VB
+```vbnet
 Set cMSSQL = New clsMSSQL
 
 cMSSQL.Verbose = True
@@ -148,7 +143,7 @@ Read an entire table and generate a string with the table content. Respect the m
 
 See https://github.com/cavo789/vbs_scripts/blob/master/test/sql_GetTableContentMarkdown.vbs for an example
 
-```VB
+```vbnet
 Set cMSSQL = New clsMSSQL
 
 cMSSQL.Verbose = True

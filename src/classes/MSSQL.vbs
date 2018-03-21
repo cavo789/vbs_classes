@@ -1,4 +1,4 @@
-' ====================================================================
+' =============================================================
 '
 ' Author : Christophe Avonture
 ' Date	: November 2017
@@ -9,7 +9,7 @@
 ' SQL Server database
 '
 ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSSQL.md
-' ====================================================================
+' =============================================================
 
 Option Explicit
 
@@ -107,13 +107,13 @@ Class clsMSSQL
 		If expr Then IIf = truepart
 	End Function
 
-	' --------------------------------------------------------------
+	' ----------------------------------------------------
 	'
 	' Get the system folder
 	'
 	' Return, for instance, "C:\Windows\System32\"
 	'
-	' --------------------------------------------------------------
+	' ----------------------------------------------------
 	Private Function GetSystemFolder()
 
 		Const SystemFolder= 1
@@ -131,7 +131,7 @@ Class clsMSSQL
 
 	End function
 
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	' Read an entire table and generate a string with the table
 	' content. Will probably give errors on big table since the
 	' result is a string
@@ -142,7 +142,7 @@ Class clsMSSQL
 	' * bIsMarkdown (boolean) 	: should the ouput be a Markdown
 	'								string ?
 	'
-	' --------------------------------------------------------------
+	' --------------------------------------------------------
 	Private Function p_GetTableContent(ByVal sTableName, _
 		ByVal bIsMarkdown)
 
@@ -220,12 +220,12 @@ Class clsMSSQL
 
 	End Function
 
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	'
 	' Try to establish a connection to the server. Return True
 	' if connection is successfull
 	'
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	Public Function CheckConnection()
 
 		Dim conn
@@ -276,7 +276,7 @@ Class clsMSSQL
 
 	End function
 
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	' Read an entire table and generate a string with the table
 	' content. This string can f.i. be a CSV delimited string.
 	'
@@ -292,12 +292,12 @@ Class clsMSSQL
 	' * sTableName	: name of the table
 	'
 	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#gettablecontent
-	' --------------------------------------------------------------
+	' --------------------------------------------------------
 	Public Function GetTableContent(ByVal sTableName)
 		GetTableContent = p_GetTableContent(sTableName, false)
 	End Function
 
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	' Read an entire table and generate a string with the table
 	' content. Respect the markdown format.
 	'
@@ -313,7 +313,7 @@ Class clsMSSQL
 	' * sTableName	: name of the table
 	'
 	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#gettablecontentmarkdown
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	Public Function GetTableContentMarkdown(ByVal sTableName)
 
 		' Overwrite the delimiter, should be the pipe followed
@@ -325,7 +325,7 @@ Class clsMSSQL
 		GetTableContentMarkdown = p_GetTableContent(sTableName, true)
 	End Function
 
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	' Create a User DSN to access a database through ODBC
 	'
 	' Parameter :
@@ -359,7 +359,7 @@ Class clsMSSQL
 	'
 	' Set cMSSQL = Nothing
 	'
-	' --------------------------------------------------------------
+	' ---------------------------------------------------------
 	Public Function CreateUserDSN(arrParams)
 
 		Dim sName, sDescription, sDriver, sDriverName

@@ -23,8 +23,14 @@
 ' ========
 '
 ' * src\classes\MSAccess.vbs
+' * src\classes\MSExcel.vbs
 '
 ' To get more info, please read https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist
+'
+' Changes
+' =======
+'
+' March 2018 - Open Excel and no more Notepad once finished
 '
 ' ====================================================================
 
@@ -90,10 +96,11 @@ Sub IncludeClasses()
 	Set objFile = Nothing
 
 	IncludeFile(sFolder & "src\classes\MSAccess.vbs")
+	IncludeFile(sFolder & "src\classes\MSExcel.vbs")
 
 End Sub
 
-Dim cMSAccess
+Dim cMSAccess, cMSExcel
 Dim arrDBNames(0)
 Dim sFieldsList, sFileName, sFile
 Dim objFSO, objFile, oShell
@@ -133,8 +140,10 @@ Dim objFSO, objFile, oShell
 		objFile.Close
 		Set objFile = Nothing
 
-		Set oShell = WScript.CreateObject ("WScript.Shell")
-		oShell.run "notepad.exe """ & sFileName & ""
-		Set oShell = Nothing
-
+		Set cMSExcel = New clsMSExcel
+		cMSExcel.FileName = sFileName
+		cMSExcel.Verbose = True
+		cMSExcel.OpenCSV sFile & " - Field lists", "fields"
+		Call cMSExcel.MakeVisible
+		Set cMSExcel = Nothing
 	End if

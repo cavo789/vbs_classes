@@ -1,4 +1,4 @@
-' ====================================================================
+' ================================================================
 '
 ' Author : Christophe Avonture
 ' Date	: November-December 2017
@@ -9,7 +9,7 @@
 ' to get the list of tables in a database.
 '
 ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md
-' ====================================================================
+' ================================================================
 
 Option Explicit
 
@@ -110,13 +110,13 @@ Class clsMSAccess
 
 	End function
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	'
 	' Create a folder structure; create parents folder if not found
 	' CreateFolderStructure("c:\temp\a\b\c\d\e") will create the
 	' full structure in one call
 	'
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Private Sub CreateFolderStructure(ByVal sFolderName)
 
 		Dim arrPart, sBaseName, sDirName
@@ -148,12 +148,12 @@ Class clsMSAccess
 
 	End Sub
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	' FieldTypeName
 	' by Allen Browne, allen@allenbrowne.com. Updated June 2006.
 	' copied from http://allenbrowne.com/func-06.html
 	' (No license information found at that URL.)
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Private Function GetFieldTypeName(FieldType, FieldAttributes)
 
 		Dim sReturn
@@ -203,9 +203,9 @@ Class clsMSAccess
 
 	End Function
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	' Open the database
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Sub OpenDatabase()
 
 		If (oApplication is Nothing) then
@@ -221,9 +221,9 @@ Class clsMSAccess
 
 	End Sub
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	' Close the database
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Sub CloseDatabase()
 
 		If Not (oApplication is Nothing) then
@@ -232,7 +232,7 @@ Class clsMSAccess
 
 	End Sub
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	'
 	' Scan one or severall MS Access databases and retrieve the list
 	' of tables in these DBs.
@@ -248,7 +248,7 @@ Class clsMSAccess
 	'
 	'	wScript.echo GetListOfTables(arr, True)
 	'
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Function GetListOfTables(ByRef arrDBNames, bOnlyForeign)
 
 		Dim i, iMin, iMax, wTable, wRecordCount
@@ -392,7 +392,7 @@ Class clsMSAccess
 
 	End Function
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	'
 	' Scan one or severall MS Access databases, retrieve the list
 	' of tables in these DBs and get the list of fields plus some
@@ -411,7 +411,7 @@ Class clsMSAccess
 	'
 	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#getfieldslist
 	'
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Function GetFieldsList(ByRef arrDBNames)
 
 		Dim i, iMin, iMax, sShortest, sLargest, wPos, wRow, wFieldsCount
@@ -537,7 +537,7 @@ Class clsMSAccess
 
 	End Function
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	'
 	' Scan one or severall MS Access databases and if table's name
 	' start with a given prefix (like "dbo_"), remove that prefix
@@ -554,7 +554,7 @@ Class clsMSAccess
 	'	wScript.echo RemovePrefix(arr, "dbo_")
 	'
 	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSAccess.md#removeprefix
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Sub RemovePrefix(ByRef arrDBNames, sPrefix)
 
 		Dim i, iMin, iMax
@@ -621,9 +621,10 @@ Class clsMSAccess
 
 	End Sub
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	'
-	' Open a database and export every forms, macros, modules and reports code
+	' Open a database and export every forms, macros, modules
+	' and reports code
 	'
 	' @arrDBNames : array - Contains the list of databases to scan
 	'
@@ -635,7 +636,7 @@ Class clsMSAccess
 	'
 	'	wScript.echo Decompose(arr)
 	'
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Sub Decompose(ByRef arrDBNames, sExportPath)
 
 		Dim i, iMin, iMax
@@ -760,7 +761,7 @@ Class clsMSAccess
 
 	End Sub
 
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	'
 	' Check if a table exists
 	'
@@ -780,7 +781,7 @@ Class clsMSAccess
 	'		' ...
 	'	End If
 	'
-	' --------------------------------------------------------------
+	' -----------------------------------------------------------
 	Public Function CheckIfTableExists(ByVal sTableName)
 
 		Dim cat, tbl

@@ -1,0 +1,1 @@
+cscript excel_references_listall.vbs c:\temp\sample.xlsx //nologo

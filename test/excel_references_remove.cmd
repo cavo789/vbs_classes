@@ -1,0 +1,1 @@
+cscript excel_references_remove.vbs c:\temp\sample.xlsx //nologo
