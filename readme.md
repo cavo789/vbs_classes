@@ -1,3 +1,5 @@
+![Banner](images/banner.jpg)
+
 # Windows - Script utilities for Windows, MS Office and SQL Server
 
 This repository contains VBS classes that will help any VBS developpers.
