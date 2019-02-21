@@ -13,136 +13,138 @@ Option Explicit
 
 Class clsFiles
 
-	Dim objFSO, objFile
+    Dim objFSO, objFile
 
-	Private bVerbose
+    Private bVerbose
 
-	Public Property Let verbose(bYesNo)
-		bVerbose = bYesNo
-	End Property
+    Public Property Let verbose(bYesNo)
+        bVerbose = bYesNo
+    End Property
 
-	Private Sub Class_Initialize()
-		bVerbose = False
-		Set objFSO = CreateObject("Scripting.FileSystemObject")
-	End Sub
+    Private Sub Class_Initialize()
+        bVerbose = False
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+    End Sub
 
-	Private Sub Class_Terminate()
-		Set objFSO = Nothing
-	End Sub
+    Private Sub Class_Terminate()
+        Set objFSO = Nothing
+    End Sub
 
-	' --------------------------------------------------
-	' Create a text file
-	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#createtextfile
-	' --------------------------------------------------
-	Public Sub CreateTextFile(ByVal sFileName, ByVal sContent)
+    ' --------------------------------------------------
+    ' Create a text file
+    ' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#createtextfile
+    ' --------------------------------------------------
+    Public Sub CreateTextFile(ByVal sFileName, ByVal sContent)
 
-		If bVerbose Then
-			wScript.echo "Create file " & sFileName & " " & _
-				"(clsFiles::CreateTextFile)"
-		End If
+        If bVerbose Then
+            wScript.echo "Create file " & sFileName & " " & _
+                "(clsFiles::CreateTextFile)"
+        End If
 
-		Set objFile = objFSO.CreateTextFile(sFileName, 2, True)
-		objFile.Write sContent
-		objFile.Close
-		Set objFile = Nothing
+        Set objFile = objFSO.CreateTextFile(sFileName, 2, True)
+        objFile.Write sContent
+        objFile.Close
+        Set objFile = Nothing
 
-	End Sub
+    End Sub
 
-	Public Function FileExists(ByVal sFileName)
-		FileExists = objFSO.FileExists(sFileName)
-	End Function
+    Public Function FileExists(ByVal sFileName)
+        FileExists = objFSO.FileExists(sFileName)
+    End Function
 
-	' --------------------------------------------------
-	' Determine if a file is Readonly or not
-	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#isreadonly
-	' --------------------------------------------------
-	Public Function IsReadOnly(ByVal sFileName)
+    ' --------------------------------------------------
+    ' Determine if a file is Readonly or not
+    ' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#isreadonly
+    ' --------------------------------------------------
+    Public Function IsReadOnly(ByVal sFileName)
 
-		IsReadOnly = False
+        IsReadOnly = False
 
-		If objFso.FileExists(sFileName) Then
-			If objFso.GetFile(sFileName).Attributes And 1 Then
-				IsReadOnly = True
-			End If
-		End If
+        If objFso.FileExists(sFileName) Then
+            If objFso.GetFile(sFileName).Attributes And 1 Then
+                IsReadOnly = True
+            End If
+        End If
 
-	End Function
+    End Function
 
-	' --------------------------------------------------
-	' Set the ReadOnly attribute for a file.
-	' Assuming that the file exists.
-	' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#setreadonly
-	' --------------------------------------------------
-	Public Sub SetReadOnly(sFileName)
+    ' --------------------------------------------------
+    ' Set the ReadOnly attribute for a file.
+    ' Assuming that the file exists.
+    ' See documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/Files.md#setreadonly
+    ' --------------------------------------------------
+    Public Sub SetReadOnly(sFileName)
 
-		Dim objFile
+        Dim objFile
 
-		On Error Resume Next
+        On Error Resume Next
 
-		Set objFile = objFSO.GetFile(sFileName)
+        Set objFile = objFSO.GetFile(sFileName)
 
-		' Not sure that the connected user can change
-		' file's attributes. If he can't don't raise an error
-		objFile.Attributes = objFile.Attributes OR 1
+        ' Not sure that the connected user can change
+        ' file's attributes. If he can't don't raise an error
+        objFile.Attributes = objFile.Attributes OR 1
 
-		If Err.Number <> 0 Then
-			Err.Clear
-		End if
+        If Err.Number <> 0 Then
+            Err.Clear
+        End if
 
-		On Error Goto 0
+        On Error Goto 0
 
-		Set objFile = Nothing
+        Set objFile = Nothing
 
-	End Sub
+    End Sub
 
-	' --------------------------------------------------
-	' Remove the ReadOnly attribute for a file.
-	' Assuming that the file exists.
-	' --------------------------------------------------
-	Public Sub SetReadWrite(sFileName)
+    ' --------------------------------------------------
+    ' Remove the ReadOnly attribute for a file.
+    ' Assuming that the file exists.
+    ' --------------------------------------------------
+    Public Sub SetReadWrite(sFileName)
 
-		Dim objFile
+        Dim objFile
 
-		On Error Resume Next
+        On Error Resume Next
 
-		Set objFile = objFSO.GetFile(sFileName)
+        Set objFile = objFSO.GetFile(sFileName)
 
-		' Not sure that the connected user can change
-		' file's attributes. If he can't don't raise an error
-		objFile.Attributes = objFile.Attributes XOR 1
+        ' Not sure that the connected user can change
+        ' file's attributes. If he can't don't raise an error
+        If objFile.Attributes AND 1 Then  ' 1 = readonly
+            objFile.Attributes = objFile.Attributes XOR 1
+        End If
 
-		If Err.Number <> 0 Then
-			Err.Clear
-		End if
+        If Err.Number <> 0 Then
+            Err.Clear
+        End if
 
-		On Error Goto 0
+        On Error Goto 0
 
-		Set objFile = Nothing
+        Set objFile = Nothing
 
-	End Sub
+    End Sub
 
-	Public Function Copy(ByVal sSource, ByVal sTarget)
+    Public Function Copy(ByVal sSource, ByVal sTarget)
 
-		Dim bReadOnly
+        Dim bReadOnly
 
-		If (FileExists(sSource)) Then
-			wScript.echo "Copy " & sSource & " to " & sTarget
+        If (FileExists(sSource)) Then
+            wScript.echo "Copy " & sSource & " to " & sTarget
 
-			bReadOnly = IsReadOnly(sTarget)
+            bReadOnly = IsReadOnly(sTarget)
 
-			If bReadOnly Then
-				' Remove the read-only attribute
-				SetReadWrite(sTarget)
-			End If
+            If bReadOnly Then
+                ' Remove the read-only attribute
+                SetReadWrite(sTarget)
+            End If
 
-			objFSO.CopyFile sSource, sTarget
+            objFSO.CopyFile sSource, sTarget
 
-			If bReadOnly Then
-				' And set it again
-				SetReadOnly(sTarget)
-			End If
+            If bReadOnly Then
+                ' And set it again
+                SetReadOnly(sTarget)
+            End If
 
-		End if
-	End Function
+        End if
+    End Function
 
 End Class

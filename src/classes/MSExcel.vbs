@@ -21,616 +21,685 @@ Option Explicit
 
 Class clsMSExcel
 
-	Private oApplication
-	Private sFileName
-	Private bVerbose, bEnableEvents, bDisplayAlerts
+    Private oApplication
+    Private sFileName
+    Private bVerbose, bEnableEvents, bDisplayAlerts
 
-	Private bAppHasBeenStarted
+    Private bAppHasBeenStarted
 
-	Public Property Let verbose(bYesNo)
-		bVerbose = bYesNo
-	End Property
+    Public Property Let verbose(bYesNo)
+        bVerbose = bYesNo
+    End Property
 
-	Public Property Let EnableEvents(bYesNo)
-		bEnableEvents = bYesNo
+    Public Property Let EnableEvents(bYesNo)
+        bEnableEvents = bYesNo
 
-		If Not (oApplication Is Nothing) Then
-			oApplication.EnableEvents = bYesNo
-		End if
-	End Property
+        If Not (oApplication Is Nothing) Then
+            oApplication.EnableEvents = bYesNo
+        End if
+    End Property
 
-	Public Property Let DisplayAlerts(bYesNo)
-		bDisplayAlerts = bYesNo
+    Public Property Let DisplayAlerts(bYesNo)
+        bDisplayAlerts = bYesNo
 
-		If Not (oApplication Is Nothing) Then
-			oApplication.DisplayAlerts = bYesNo
-		End if
+        If Not (oApplication Is Nothing) Then
+            oApplication.DisplayAlerts = bYesNo
+        End if
 
-	End Property
+    End Property
 
-	Public Property Let FileName(ByVal sName)
-		sFileName = sName
-	End Property
+    Public Property Let FileName(ByVal sName)
+        sFileName = sName
+    End Property
 
-	Public Property Get FileName
-		FileName = sFileName
-	End Property
+    Public Property Get FileName
+        FileName = sFileName
+    End Property
 
-	Public Property Let caption(ByVal sValue)
-		If Not (oApplication Is Nothing) Then
-			oApplication.Caption = sValue
-		End If
-	End Property
+    Public Property Let caption(ByVal sValue)
+        If Not (oApplication Is Nothing) Then
+            oApplication.Caption = sValue
+        End If
+    End Property
 
-	' Make oApplication accessible
-	Public Property Get app
-		Set app = oApplication
-	End Property
+    ' Make oApplication accessible
+    Public Property Get app
+        Set app = oApplication
+    End Property
 
-	Private Sub Class_Initialize()
-		bVerbose = False
-		bAppHasBeenStarted = False
-		bEnableEvents = False
-		bDisplayAlerts = False
-		Set oApplication = Nothing
-	End Sub
+    Private Sub Class_Initialize()
+        bVerbose = False
+        bAppHasBeenStarted = False
+        bEnableEvents = False
+        bDisplayAlerts = False
+        Set oApplication = Nothing
+    End Sub
 
-	Private Sub Class_Terminate()
-		Set oApplication = Nothing
-	End Sub
+    Private Sub Class_Terminate()
+        Set oApplication = Nothing
+    End Sub
 
-	' --------------------------------------------------------
-	' Initialize the oApplication object variable : get a pointer
-	' to the current Excel.exe app if already in memory or start
-	' a new instance.
-	'
-	' If a new instance has been started, initialize the variable
-	' bAppHasBeenStarted to True so the rest of the script knows
-	' that Excel should then be closed by the script.
-	' --------------------------------------------------------
-	Public Function Instantiate()
+    ' --------------------------------------------------------
+    ' Initialize the oApplication object variable : get a pointer
+    ' to the current Excel.exe app if already in memory or start
+    ' a new instance.
+    '
+    ' If a new instance has been started, initialize the variable
+    ' bAppHasBeenStarted to True so the rest of the script knows
+    ' that Excel should then be closed by the script.
+    ' --------------------------------------------------------
+    Public Function Instantiate()
 
-		If (oApplication Is Nothing) Then
+        If (oApplication Is Nothing) Then
 
-			On error Resume Next
+            On error Resume Next
 
-			Set oApplication = GetObject(,"Excel.Application")
+            Set oApplication = GetObject(,"Excel.Application")
 
-			If (Err.number <> 0) or (oApplication Is Nothing) Then
-				Set oApplication = CreateObject("Excel.Application")
-				' Remember that Excel has been started by
-				' this script ==> should be released
-				bAppHasBeenStarted = True
-			End If
+            If (Err.number <> 0) or (oApplication Is Nothing) Then
+                Set oApplication = CreateObject("Excel.Application")
+                ' Remember that Excel has been started by
+                ' this script ==> should be released
+                bAppHasBeenStarted = True
+            End If
 
-			oApplication.EnableEvents = bEnableEvents
-			oApplication.DisplayAlerts = bDisplayAlerts
+            oApplication.EnableEvents = bEnableEvents
+            oApplication.DisplayAlerts = bDisplayAlerts
 
-			Err.clear
+            Err.clear
 
-			On error Goto 0
+            On error Goto 0
 
-		End If
+        End If
 
-		' Return True if the application was created right
-		' now
-		Instantiate = bAppHasBeenStarted
+        ' Return True if the application was created right
+        ' now
+        Instantiate = bAppHasBeenStarted
 
-	End Function
+    End Function
 
-	' --------------------------------------------------------
-	' Be sure Excel is visible
-	' --------------------------------------------------------
-	Public Sub MakeVisible
+    ' --------------------------------------------------------
+    ' Be sure Excel is visible
+    ' --------------------------------------------------------
+    Public Sub MakeVisible
 
-		Dim objShell
+        Dim objShell
 
-		If Not (oApplication Is Nothing) Then
+        If Not (oApplication Is Nothing) Then
 
-			With oApplication
+            With oApplication
 
-				.Application.ScreenUpdating = True
-				.Application.Visible = True
-				.Application.DisplayFullScreen = False
+                .Application.ScreenUpdating = True
+                .Application.Visible = True
+                .Application.DisplayFullScreen = False
 
-				.WindowState = -4137 ' xlMaximized
+                .WindowState = -4137 ' xlMaximized
 
-			End With
+            End With
 
-			Set objShell = CreateObject("WScript.Shell")
-			objShell.appActivate oApplication.Caption
-			Set objShell = Nothing
+            Set objShell = CreateObject("WScript.Shell")
+            objShell.appActivate oApplication.Caption
+            Set objShell = Nothing
 
-		End If
+        End If
 
-	End Sub
+    End Sub
 
-	Public Sub Quit()
-		If not (oApplication Is Nothing) Then
-			oApplication.Quit
-		End If
-	End Sub
+    Public Sub Quit()
+        If not (oApplication Is Nothing) Then
+            oApplication.Quit
+        End If
+    End Sub
 
-	' --------------------------------------------------------
-	' Open a CSV file, correctly manage the split into columns,
-	' add a title, rename the tab
-	'
-	' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#opencsv
-	' --------------------------------------------------------
-	Public Sub OpenCSV(sTitle, sSheetCaption)
+    ' --------------------------------------------------------
+    ' Open a CSV file, correctly manage the split into columns,
+    ' add a title, rename the tab
+    '
+    ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#opencsv
+    ' --------------------------------------------------------
+    Public Sub OpenCSV(sTitle, sSheetCaption)
 
-		Dim objFSO
-		Dim wCol
+        Dim objFSO
+        Dim wCol
 
-		If bVerbose AND (sFileName = "") Then
-			wScript.echo "Error, you need to initialize the " & _
-				"filename first", " (clsMSExcel::OpenCSV)"
-			Exit sub
-		End If
+        If bVerbose AND (sFileName = "") Then
+            wScript.echo "Error, you need to initialize the " & _
+                "filename first", " (clsMSExcel::OpenCSV)"
+            Exit sub
+        End If
 
-		Set objFSO = CreateObject("Scripting.FileSystemObject")
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-		If (objFSO.FileExists(sFileName)) Then
+        If (objFSO.FileExists(sFileName)) Then
 
-			If bVerbose Then
-				wScript.echo "Open " & sFileName & _
-					" (clsMSExcel::OpenCSV)"
-			End If
+            If bVerbose Then
+                wScript.echo "Open " & sFileName & _
+                    " (clsMSExcel::OpenCSV)"
+            End If
 
-			If (oApplication Is Nothing) Then
-				Call Instantiate()
-			End If
+            If (oApplication Is Nothing) Then
+                Call Instantiate()
+            End If
 
-			' 1 =  xlDelimited
-			' Delimiter is ";"
-			oApplication.Workbooks.OpenText sFileName,,,1,,,,,,,True,";"
+            ' 1 =  xlDelimited
+            ' Delimiter is ";"
+            oApplication.Workbooks.OpenText sFileName,,,1,,,,,,,True,";"
 
-			' If a title has been specified,
-			' add quickly a small templating
-			If (Trim(sTitle) <> "") Then
+            ' If a title has been specified,
+            ' add quickly a small templating
+            If (Trim(sTitle) <> "") Then
 
-				With oApplication.ActiveSheet
+                With oApplication.ActiveSheet
 
-					' Get the number of colunms in the file
-					wCol = .Range("A1").CurrentRegion.Columns.Count
+                    ' Get the number of colunms in the file
+                    wCol = .Range("A1").CurrentRegion.Columns.Count
 
-					.Range("1:3").insert
-					.Range("A2").Value = Trim(sTitle)
+                    .Range("1:3").insert
+                    .Range("A2").Value = Trim(sTitle)
 
-					With .Range(.Cells(2, 1), .Cells(2, wCol))
-						' 7 = xlCenterAcrossSelection
-						.HorizontalAlignment = 7
-						.font.bold = True
-						.font.size = 14
-					End with
+                    With .Range(.Cells(2, 1), .Cells(2, wCol))
+                        ' 7 = xlCenterAcrossSelection
+                        .HorizontalAlignment = 7
+                        .font.bold = True
+                        .font.size = 14
+                    End with
 
-					.Cells(4,1).AutoFilter
+                    .Cells(4,1).AutoFilter
 
-					.Columns.EntireColumn.AutoFit
+                    .Columns.EntireColumn.AutoFit
 
-					.Cells(5,1).Select
+                    .Cells(5,1).Select
 
-				End with
+                End with
 
-				oApplication.ActiveWindow.DisplayGridLines = False
-				oApplication.ActiveWindow.FreezePanes = true
+                oApplication.ActiveWindow.DisplayGridLines = False
+                oApplication.ActiveWindow.FreezePanes = true
 
-			End If
+            End If
 
-			If (Trim(sSheetCaption) <> "") Then
-				oApplication.ActiveSheet.Name = sSheetCaption
-			End If
+            If (Trim(sSheetCaption) <> "") Then
+                oApplication.ActiveSheet.Name = sSheetCaption
+            End If
 
-		End If
+        End If
 
-		Set objFSO = Nothing
+        Set objFSO = Nothing
 
-	End Sub
+    End Sub
 
-	' --------------------------------------------------------
-	' Open a standard Excel file and allow to specify if the
-	' file should be opened in a read-only mode or not
-	' --------------------------------------------------------
-	Public Sub Open(bReadOnly)
+    ' --------------------------------------------------------
+    ' Open a standard Excel file and allow to specify if the
+    ' file should be opened in a read-only mode or not
+    '
+    ' 20190124 - Add sFileName as parameter and don't use the global variable
+    ' --------------------------------------------------------
+    Public Sub Open(sFileName, bReadOnly)
 
-		If not (oApplication Is nothing) Then
+        If not (oApplication Is nothing) Then
 
-			If bVerbose Then
-				wScript.echo "Open " & sFileName & _
-					" (clsMSExcel::Open)"
-			End If
+            If bVerbose Then
+                wScript.echo "Open " & sFileName & _
+                    " (clsMSExcel::Open)"
+            End If
 
-			' False = UpdateLinks
-			oApplication.Workbooks.Open sFileName, False, _
-				bReadOnly
+            ' False = UpdateLinks
+            oApplication.Workbooks.Open sFileName, False, _
+                bReadOnly
 
-		End If
+        End If
 
-	End sub
+    End sub
 
-	' --------------------------------------------------------
-	' Close the active workbook
-	' --------------------------------------------------------
-	Public Sub CloseFile(sFileName)
+    ' --------------------------------------------------------
+    ' Close the active workbook
+    ' --------------------------------------------------------
+    Public Sub CloseFile(sFileName)
 
-		Dim wb
-		Dim I
-		Dim objFSO
-		Dim sBaseName
+        Dim wb
+        Dim I
+        Dim objFSO
+        Dim sBaseName
 
-		If Not (oApplication Is Nothing) Then
+        If Not (oApplication Is Nothing) Then
 
-			Set objFSO = CreateObject("Scripting.FileSystemObject")
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-			If (sFileName = "") Then
-				If Not (oApplication.ActiveWorkbook Is Nothing) Then
-					sFileName = oApplication.ActiveWorkbook.FullName
-				End If
-			End If
+            If (sFileName = "") Then
+                If Not (oApplication.ActiveWorkbook Is Nothing) Then
+                    sFileName = oApplication.ActiveWorkbook.FullName
+                End If
+            End If
 
-			If (sFileName <> "") Then
+            If (sFileName <> "") Then
 
-				If bVerbose Then
-					wScript.echo "Close " & sFileName & _
-						" (clsMSExcel::CloseFile)"
-				End if
+                If bVerbose Then
+                    wScript.echo "Close " & sFileName & _
+                        " (clsMSExcel::CloseFile)"
+                End if
 
-				' Only the basename and not the full path
-				sBaseName = objFSO.GetFileName(sFileName)
+                ' Only the basename and not the full path
+                sBaseName = objFSO.GetFileName(sFileName)
 
-				On Error Resume Next
-				Set wb = oApplication.Workbooks(sBaseName)
-				If Not (err.number = 0) Then
-					' Not found, workbook not loaded
-					Set wb = Nothing
-				Else
-					If bVerbose Then
-						wScript.echo "	Closing " & sBaseName & _
-							" (clsMSExcel::CloseFile)"
-					End if
-					' Close without saving
-					wb.Close False
-				End if
+                On Error Resume Next
+                Set wb = oApplication.Workbooks(sBaseName)
+                If Not (err.number = 0) Then
+                    ' Not found, workbook not loaded
+                    Set wb = Nothing
+                Else
+                    If bVerbose Then
+                        wScript.echo "	Closing " & sBaseName & _
+                            " (clsMSExcel::CloseFile)"
+                    End if
+                    ' Close without saving
+                    wb.Close False
+                End if
 
-				On Error Goto 0
+                On Error Goto 0
 
-			End If
+            End If
 
-			Set objFSO = Nothing
+            Set objFSO = Nothing
 
-		End If
+        End If
 
-	End Sub
+    End Sub
 
-	' --------------------------------------------------------
-	' Save the active workbook on disk
-	' --------------------------------------------------------
-	Public Sub SaveFile()
+    ' --------------------------------------------------------
+    ' Save the active workbook on disk
+    '
+    ' 20190124 - Add sFileName as parameter and don't use the global variable
+    ' --------------------------------------------------------
+    Public Sub SaveFile(sFileName)
 
-		Dim wb, objFSO
+        Dim wb, objFSO
 
-		' If Excel isn't loaded or has no active workbook, there
-		' is thus nothing to save.
-		If Not (oApplication Is Nothing) Then
+        ' If Excel isn't loaded or has no active workbook, there
+        ' is thus nothing to save.
+        If Not (oApplication Is Nothing) Then
 
-			Set objFSO = CreateObject("Scripting.FileSystemObject")
-			Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-			If Not (wb is Nothing) Then
+            On Error Resume Next
 
-				If (bVerbose) Then
-					wScript.echo "Save file " & sFileName & _
-						" (clsMSExcel::SaveFile)"
-				End If
+            Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
 
-				If (wb.FullName = sFileName) Then
-					wb.Save
-				Else
-					' Don't specify extension because if we've opened
-					' a .xlsm file and save the file elsewhere, we need
-					' to keep the same extension
-					wb.SaveAs sFileName
-				End If
-			End If
+            If (Err.Number <> 0) Then
+                Err.clear
+                ' Perhaps the file isn't a .xlsx (.xlsm) file but an Addin$
+                ' Try with the AddIns2 collection
+                Set wb = oApplication.AddIns2(objFSO.GetFileName(sFileName))
+            End If
 
-			Set wb = Nothing
-			Set objFSO = Nothing
+            On Error Goto 0
 
-		End If
+            If Not (wb is Nothing) Then
 
-	End Sub
+                If (bVerbose) Then
+                    wScript.echo "Save file " & sFileName & _
+                        " (clsMSExcel::SaveFile)"
+                End If
 
-	' --------------------------------------------------------
-	' Get the language of the MS Office interface
-	' Only return FR or NL; don't manage other languages
-	' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#getapplicationlanguage
-	' --------------------------------------------------------
-	Public Function getApplicationLanguage(sDefault)
+                If (wb.FullName = sFileName) Then
+                    wb.Save
+                Else
+                    ' Don't specify extension because if we've opened
+                    ' a .xlsm file and save the file elsewhere, we need
+                    ' to keep the same extension
+                    wb.SaveAs sFileName
+                End If
+            End IF
 
-		Dim iLanguageID, bShouldClose
-		Dim sValue
+            Set wb = Nothing
+            Set objFSO = Nothing
 
-		' Default value
-		sValue = sDefault
+        End If
 
-		If (oApplication Is Nothing) Then
-			bShouldClose = Instantiate()
-		End If
+    End Sub
 
-		On error Resume Next
+    ' --------------------------------------------------------
+    ' Get the language of the MS Office interface
+    ' Only return FR or NL; don't manage other languages
+    ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#getapplicationlanguage
+    ' --------------------------------------------------------
+    Public Function getApplicationLanguage(sDefault)
 
-		' 2 = msoLanguageIDUI
-		iLanguageID = oApplication.LanguageSettings.LanguageID(2)
+        Dim iLanguageID, bShouldClose
+        Dim sValue
 
-		If (Err.number <> 0) Then
-			iLanguageID = 0
-		End If
+        ' Default value
+        sValue = sDefault
 
-		Err.Clear
+        If (oApplication Is Nothing) Then
+            bShouldClose = Instantiate()
+        End If
 
-		On error Goto 0
+        On error Resume Next
 
-		' Quit Excel if it was started here, in this script
-		If bShouldClose then
-			oApplication.Quit
-			Set oApplication = Nothing
-		End If
+        ' 2 = msoLanguageIDUI
+        iLanguageID = oApplication.LanguageSettings.LanguageID(2)
 
-		If (iLanguageID<>0) then
-			' Ok, we've found the language of MS Office
+        If (Err.number <> 0) Then
+            iLanguageID = 0
+        End If
 
-			If ((iLanguageID="1036") OR _
-				(iLanguageID="2060") OR _
-				(iLanguageID="3084") OR _
-				(iLanguageID="4108") OR _
-				(iLanguageID="5132")) Then
-				' MS Office has been installed in French
-				sValue="FR"
-			ElseIf (iLanguageID="1043") OR (iLanguageID="2067") Then
-				' MS Office has been installed in Dutch
-				sValue="NL"
-			End If
+        Err.Clear
 
-		End If
+        On error Goto 0
 
-		getApplicationLanguage = sValue
+        ' Quit Excel if it was started here, in this script
+        If bShouldClose then
+            oApplication.Quit
+            Set oApplication = Nothing
+        End If
 
-	End Function
+        If (iLanguageID<>0) then
+            ' Ok, we've found the language of MS Office
 
-	' --------------------------------------------------------
-	' Check if a specific file is already opened in Excel
-	' This function will return True if the file is already loaded.
-	' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#isloaded
-	' --------------------------------------------------------
-	Public Function IsLoaded()
+            If ((iLanguageID="1036") OR _
+                (iLanguageID="2060") OR _
+                (iLanguageID="3084") OR _
+                (iLanguageID="4108") OR _
+                (iLanguageID="5132")) Then
+                ' MS Office has been installed in French
+                sValue="FR"
+            ElseIf (iLanguageID="1043") OR (iLanguageID="2067") Then
+                ' MS Office has been installed in Dutch
+                sValue="NL"
+            End If
 
-		Dim bLoaded, bShouldClose
-		Dim bCheckAddins2
-		Dim I, J
+        End If
 
-		bLoaded = false
+        getApplicationLanguage = sValue
 
-		If (oApplication Is Nothing) Then
-			bShouldClose = Instantiate()
-		End If
+    End Function
 
-		On Error Resume Next
+    ' --------------------------------------------------------
+    ' Check if a specific file is already opened in Excel
+    ' This function will return True if the file is already loaded.
+    '
+    ' 20190124 - Add sFileName as parameter and don't use the global variable
+    ' --------------------------------------------------------
+    Public Function IsLoaded(sFileName)
 
-		If bVerbose Then
-			wScript.echo "Check if " & sFileName & _
-				" is already loaded (clsMSExcel::IsLoaded)"
-		End If
+        Dim bLoaded, bShouldClose
+        Dim bCheckAddins2
+        Dim I, J
 
-		If (Right(sFileName, 5) = ".xlam") Then
+        bLoaded = false
 
-			' The AddIns2 collection only exists since MSOffice
-			' 2014 (version 14)
-			On Error Resume Next
-			J = oApplication.AddIns2.Count
-			bCheckAddins2 = (Err.Number = 0)
-			On Error Goto 0
+        If (oApplication Is Nothing) Then
+            bShouldClose = Instantiate()
+        End If
 
-			If (bCheckAddins2) then
+        On Error Resume Next
 
-				J = oApplication.AddIns2.Count
+        If bVerbose Then
+            wScript.echo "Check if " & sFileName & _
+                " is already loaded (clsMSExcel::IsLoaded)"
+        End If
 
-				If J > 0 Then
-					For I = 1 To J
-						If (StrComp(oApplication.AddIns2(I).FullName,sFileName,1)=0) Then
-							bLoaded = True
-							Exit For
-						End If
-					Next ' For I = 1 To J
-				End If
+        If (Right(sFileName, 5) = ".xlam") Then
 
-			End If ' If (oApplication.version >=14) then
+            ' The AddIns2 collection only exists since MSOffice
+            ' 2014 (version 14)
+            On Error Resume Next
+            J = oApplication.AddIns2.Count
+            bCheckAddins2 = (Err.Number = 0)
+            On Error Goto 0
 
-		Else ' If (Right(sFileName, 5) = ".xlam") Then
+            If (bCheckAddins2) then
 
-			' It's a .xls, .xlsm, ... file, not an AddIn
-			J = oApplication.Workbooks.Count
+                J = oApplication.AddIns2.Count
 
-			If J > 0 Then
-				For I = 1 To J
-					If (StrComp(oApplication.Workbooks(I).FullName,sFileName,1)=0) Then
-						bLoaded = True
-						Exit For
-					End If
-				Next ' For I = 1 To J
-			End If ' If J > 0 Then
+                If J > 0 Then
+                    For I = 1 To J
+                        If (StrComp(oApplication.AddIns2(I).FullName,sFileName,1)=0) Then
+                            bLoaded = True
+                            Exit For
+                        End If
+                    Next ' For I = 1 To J
+                End If
 
-		End If ' If (Right(sFileName, 5) = ".xlam") Then
+            End If ' If (oApplication.version >=14) then
 
-		On Error Goto 0
+        Else ' If (Right(sFileName, 5) = ".xlam") Then
 
-		' Quit Excel if it was started here, in this script
-		If bShouldClose then
-			oApplication.Quit
-			Set oApplication = Nothing
-		End If
+            ' It's a .xls, .xlsm, ... file, not an AddIn
+            J = oApplication.Workbooks.Count
 
-		IsLoaded = bLoaded
+            If J > 0 Then
+                For I = 1 To J
+                    If (StrComp(oApplication.Workbooks(I).FullName,sFileName,1)=0) Then
+                        bLoaded = True
+                        Exit For
+                    End If
+                Next ' For I = 1 To J
+            End If ' If J > 0 Then
 
-	End Function
+        End If ' If (Right(sFileName, 5) = ".xlam") Then
 
-	' --------------------------------------------------------
-	' Display the list of references used by the file
-	'
-	' bOnlyExternal 	Y/N - Restrict the list to only external
-	'					references
-	' bOnlyXLAM			Y/N - Restrict the list to only references
-	'					to *.xlam file
-	'
-	' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#references_listall
-	' --------------------------------------------------------
-	Public Sub References_ListAll(bOnlyExternal, bOnlyXLAM)
+        On Error Goto 0
 
-		Dim wb, ref
-		Dim bShow, bEmpty
-		Dim objFSO
+        ' Quit Excel if it was started here, in this script
+        If bShouldClose then
+            oApplication.Quit
+            Set oApplication = Nothing
+        End If
 
-		If Not (oApplication Is Nothing) Then
+        IsLoaded = bLoaded
 
-			Set objFSO = CreateObject("Scripting.FileSystemObject")
+    End Function
 
-			Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
-			bEmpty = True
+    ' --------------------------------------------------------
+    ' Display the list of references used by the file
+    '
+    ' bOnlyExternal 	Y/N - Restrict the list to only external
+    '					references
+    ' bOnlyXLAM			Y/N - Restrict the list to only references
+    '					to *.xlam file
+    '
+    ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#references_listall
+    '
+    ' 20190124 - Add sFileName as parameter and don't use the global variable
+    ' --------------------------------------------------------
+    Public Sub References_ListAll(sFileName, bOnlyExternal, bOnlyXLAM)
 
-			If Not (wb Is Nothing) Then
-				wScript.echo "List of references in " & sFileName
-				wScript.echo ""
+        Dim wb, ref
+        Dim bShow, bEmpty
+        Dim objFSO
 
-				For Each ref In wb.VBProject.References
+        If Not (oApplication Is Nothing) Then
 
-					bShow = true
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-					If (bOnlyExternal) Then
-						bShow = (ref.BuiltIn = False)
-					End If
+            Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
+            bEmpty = True
 
-					If (bShow AND bOnlyXLAM) Then
-						bShow = (right(ref.FullPath,5) = ".xlam")
-					End If
+            If Not (wb Is Nothing) Then
+                wScript.echo "List of references in " & sFileName
+                wScript.echo ""
 
-					if bShow then
+                For Each ref In wb.VBProject.References
 
-						bEmpty = False
+                    bShow = true
 
-						wScript.echo " Name " & ref.Name
-						wScript.echo " Built In: " & ref.BuiltIn
-						wScript.echo " Full Path: " & ref.FullPath
-						wScript.echo " Is Broken: " & ref.IsBroken
-						wScript.echo " Version: " & ref.Major & "." & ref.Minor
-						wScript.echo ""
+                    If (bOnlyExternal) Then
+                        bShow = (ref.BuiltIn = False)
+                    End If
 
-					End If
-				Next
-			End If
+                    If (bShow AND bOnlyXLAM) Then
+                        bShow = (right(ref.FullPath,5) = ".xlam")
+                    End If
 
-			If bEmpty Then
-				wScript.echo "The file didn't use references"
-			End If
+                    if bShow then
 
-			Set wb = Nothing
-			Set objFSO = nothing
+                        bEmpty = False
 
-		End If
-	End sub
+                        wScript.echo " Name " & ref.Name
+                        wScript.echo " Built In: " & ref.BuiltIn
+                        wScript.echo " Full Path: " & ref.FullPath
+                        wScript.echo " Is Broken: " & ref.IsBroken
+                        wScript.echo " Version: " & ref.Major & "." & ref.Minor
+                        wScript.echo ""
 
-	' --------------------------------------------------------
-	' Remove a specific reference. For instance, remove a linked
-	' .xlam library from the list of references used by the file
-	'
-	' sAddin	The name of the reference; without the extension
-	'			For instance "MyLibrary" (and not MyLibrary.xlam)
-	'
-	' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#references_remove
-	' --------------------------------------------------------
-	Public Sub References_Remove(sAddin)
+                    End If
+                Next
+            End If
 
-		Dim wb, ref
-		Dim objFSO
-		Dim sRefFullName, sBaseName
+            If bEmpty Then
+                wScript.echo "The file didn't use references"
+            End If
 
-		If Not (oApplication Is Nothing) Then
+            Set wb = Nothing
+            Set objFSO = nothing
 
-			Set objFSO = CreateObject("Scripting.FileSystemObject")
+        End If
+    End sub
 
-			Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
+    ' --------------------------------------------------------
+    ' Remove a specific reference. For instance, remove a linked
+    ' .xlam library from the list of references used by the file
+    '
+    ' sAddin   The name of the reference; without the extension
+    '          For instance "MyLibrary" (and not MyLibrary.xlam)
+    '
+    ' Documentation : https://github.com/cavo789/vbs_scripts/blob/master/src/classes/MSExcel.md#references_remove
+    '
+    ' Note: Make sure Events are disabled before calling this subroutine
+    '       ==> .EnableEvents = False
+    '
+    ' 20190124 - Add sFileName as parameter and don't use the global variable
+    ' --------------------------------------------------------
+    Public Sub References_Remove(sFileName, sAddin)
 
-			If Not (wb Is Nothing) Then
+        Dim wb, ref
+        Dim objFSO
+        Dim sRefFullName, sBaseName
 
-				With wb
-					For Each ref In .VBProject.References
-						If (ref.Name = sAddIn) Then
-							If bVerbose Then
-								wScript.echo "Remove " & ref.Name & _
-								" (clsMSExcel::References_Remove)"
-							End If
+        If Not (oApplication Is Nothing) Then
 
-							' Get the fullpath of the reference
-							sRefFullName = ref.FullPath
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-							.VBProject.References.Remove ref
-							.Save
+            ' sAddin should be a relative filename -
+            ' Without the extension !
+            If Instr(sAddin, "\")>0 Then
+                sAddin = objFSO.GetBaseName(sAddin)
+            End If
 
-							' --------------------------------------
-							' Once unloaded, close the .xlam file
-							' This should be made by closing the
-							' filename (addin.xlam) and not just
-							' the name (addin) or the fullname
-							' So get the filename
-							sBaseName = objFSO.GetFileName(sRefFullName)
+            If (StrComp(Right(sAddIn, 5), ".xlam", 1) = 0) Then
+                sAddIn = Left(sAddIn, Len(sAddIn) - 5)
+            End If
 
-							If bVerbose Then
-								wScript.echo "Unload " & sBaseName & _
-								" (clsMSExcel::References_Remove)"
-							End If
+            'If bVerbose Then
+            '    wScript.echo "Try to remove " & sAddin & " from the references"
+            'End if
 
-							oApplication.Workbooks(sBaseName).Close
+            ' IF STILL, EXCEL RUN A MACRO, IT'S MORE PROBABLY DUE TO A RIBBON
+            ' PRESENT IN THE FILE AND AN "ONLOAD" SUBROUTINE.
+            ' In this case, update the OnLoad code and check if
+            ' Application.EnableEvents is equal to False and in this case,
+            ' don't run your onLoad code; exit your subroutine.
+            ' Add something like here below in the top of your subroutine:
+            '
+            '       If Not (Application.EnableEvents) Then
+            '           Exit Sub
+            '       End If
+            '
+            ' ALSO MAKE SURE TO NOT START EXCEL VISIBLE: THE RIBON IS LOADED
+            ' IN THAT CASE
 
-							Exit For
+            Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
 
-						End If
-					Next
-				End With
+            If Not (wb Is Nothing) Then
 
-			End If
+                With wb
 
-			Set wb = Nothing
-			Set objFSO = Nothing
+                    For Each ref In .VBProject.References
 
-		End If
+                        'If bVerbose Then
+                        '    wScript.echo "   Found " & ref.Name & _
+                        '        " (clsMSExcel::References_Remove)"
+                        'End if
 
-	End Sub
+                        If (ref.Name = sAddIn) Then
 
-	Public Sub References_AddFromFile(sAddinFile)
+                            If bVerbose Then
+                                wScript.echo "      Remove the addin " & _
+                                    "(clsMSExcel::References_Remove)"
+                            End If
 
-		Dim bReturn
-		Dim wb, ref
+                            ' Get the fullpath of the reference
+                            sRefFullName = ref.FullPath
 
-		bReturn = true
+                            .VBProject.References.Remove ref
+                            .Save
 
-		Dim objFSO
+                            ' --------------------------------------
+                            ' Once unloaded, close the .xlam file
+                            ' This should be made by closing the
+                            ' filename (addin.xlam) and not just
+                            ' the name (addin) or the fullname
+                            ' So get the filename
+                            sBaseName = objFSO.GetFileName(sRefFullName)
 
-		If Not (oApplication Is Nothing) Then
+                            If bVerbose Then
+                                wScript.echo "Unload " & sBaseName & _
+                                " (clsMSExcel::References_Remove)"
+                            End If
 
-			Set objFSO = CreateObject("Scripting.FileSystemObject")
+                            Call oApplication.Workbooks(sBaseName).Close
 
-			Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
+                            Exit For
 
-			If Not (wb Is Nothing) Then
+                        End If
 
-				If bVerbose Then
-					wScript.echo "Add a reference to " & sAddInFile
-				End if
+                    Next
+                End With
 
-				wb.VBProject.References.AddFromFile sAddInFile
+            End If
 
-			End If
+            Set wb = Nothing
+            Set objFSO = Nothing
 
-		End If
+        End If
 
-	End Sub
+    End Sub
+
+    ' --------------------------------------------------------
+    ' Add an addin to the list of references.
+    ' For instance, add MyAddin.xlam to the MyInterface.xlsm
+    '
+    ' sAddin  The full filename to the addin to add as reference
+    '
+    ' 20190124 - Add sFileName as parameter and don't use the global variable
+    ' --------------------------------------------------------
+    Public Sub References_AddFromFile(sFileName, sAddinFile)
+
+        Dim bReturn
+        Dim wb, ref
+
+        bReturn = true
+
+        Dim objFSO
+
+        If Not (oApplication Is Nothing) Then
+
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+            Set wb = oApplication.Workbooks(objFSO.GetFileName(sFileName))
+
+            If Not (wb Is Nothing) Then
+
+                If bVerbose Then
+                    wScript.echo "Add a reference to " & sAddInFile
+                End if
+
+                wb.VBProject.References.AddFromFile sAddInFile
+
+            End If
+
+        End If
+
+    End Sub
 
 End Class
