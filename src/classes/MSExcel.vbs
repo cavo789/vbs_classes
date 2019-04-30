@@ -98,6 +98,14 @@ Class clsMSExcel
 
             If (Err.number <> 0) or (oApplication Is Nothing) Then
                 Set oApplication = CreateObject("Excel.Application")
+				
+				' Still nothing? Excel is thus not installed on the user's
+				' computer ==> the user should installed Excel before
+				If (oApplication Is Nothing) Then
+					wScript.echo "Excel is required, please install Excel first (clsMSExcel::Instantiate)"
+					wScript.Quit 
+				End If
+				
                 ' Remember that Excel has been started by
                 ' this script ==> should be released
                 bAppHasBeenStarted = True
