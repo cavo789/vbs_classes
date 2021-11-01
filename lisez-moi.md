@@ -1,6 +1,6 @@
-![Banner](images/banner.jpg)
-
 # Windows - Script utilities
+
+![Banner](./banner.svg)
 
 Si, comme moi, vous devez travailler sous Windows et qu'il vous faut préparer une migration MS Access -> SQL Server, les utilitaires de ce dépôt pourront vous aider.
 
